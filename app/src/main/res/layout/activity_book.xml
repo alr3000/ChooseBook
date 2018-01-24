@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hyperana.choosebook.BookActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+
+            <FrameLayout
+                android:id="@+id/page_fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+               <!-- keep empty because replace does not replace items defined in xml -->
+            </FrameLayout>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
