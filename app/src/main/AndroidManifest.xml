@@ -22,6 +22,12 @@
             android:exported="false" />
 
         <activity
+            android:name=".BookActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
             android:name=".TabbedLibraryActivity"
             android:label="@string/title_activity_tabbed_library_actvity"
             android:theme="@style/AppTheme.NoActionBar">

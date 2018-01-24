@@ -23,6 +23,11 @@ import java.io.InputStream
 /**
  * Created by alr on 1/18/18.
  */
+val BOOK_FILENAME = "book.json"
+val OFFLINE_BOOKS_DIR = "downloaded"
+val ASSETS_BOOK_DIR = ""
+val EXTRA_BOOKPATH = "bookPath"
+
 class App : Application() {
     val TAG = "App"
 
