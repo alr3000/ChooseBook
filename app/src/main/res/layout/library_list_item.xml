@@ -9,11 +9,12 @@
     android:orientation="vertical"
     android:padding="30dp">
 
-    <ImageView
+    <com.hyperana.choosebook.SquareImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         app:srcCompat="@drawable/no_image" />
 
     <LinearLayout

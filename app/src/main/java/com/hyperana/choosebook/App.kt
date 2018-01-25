@@ -86,11 +86,12 @@ class App : Application() {
             ContentResolver.SCHEME_FILE -> {
                 Log.d(TAG, "loadImageBitmap (file): " + uri)
                 try {
-                    val bmp: Bitmap = imageCache.get(uri.toString()) ?:
-                            BitmapFactory.decodeFile(filesDir.resolve(uri.path).path).also {
+                    imageCache.get(uri.toString()) ?:
+                            BitmapFactory.decodeFile(filesDir.resolve(uri.path).path)?.also {
                                 imageCache.put(uri.toString(), it)
+                                imageView?.setImageBitmap(it)
                             }
-                    imageView?.setImageBitmap(bmp)
+
                 }
                 catch (e: Exception) {
                     Log.e(TAG, "problem loading bitmap from file: " + uri, e)
