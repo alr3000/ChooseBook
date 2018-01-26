@@ -33,63 +33,49 @@ class App : Application() {
 
     val imageCache: LruCache<String, Bitmap> = LruCache(10)
     val requestQueue: RequestQueue? = null
-    get() {
-        return field ?: Volley.newRequestQueue(this)
-    }
+        get() {
+            return field ?: Volley.newRequestQueue(this)
+        }
     val bitmapConfig = Bitmap.Config.ARGB_8888
-    val MAX_IMAGE_WIDTH = 1000
+    val MAX_IMAGE_WIDTH = 1200
     val MAX_IMAGE_HEIGHT = 2000
 
 
-    fun loadInputString(
-            uri: Uri,
-            responseListener: Response.Listener<String>,
-            errorListener: Response.ErrorListener?
-    ) {
+    //todo: make async?
+    fun loadImageBitmap(imageView: ImageView?, uri: Uri) {
 
-        when (uri.scheme) {
-            ContentResolver.SCHEME_CONTENT,
-            ContentResolver.SCHEME_FILE -> {
-                Log.d(TAG, "loadBookJson (asset): " + uri)
-                try {
-                    val stream = contentResolver.openInputStream(uri)
-                    responseListener.onResponse(stream.readBytes().toString())
-                    stream.close()
-                }
-                catch(e: Exception) {
-                    errorListener?.onErrorResponse(VolleyError(e))
-                }
-            }
-            else -> {
-                requestQueue!!.add(
-                        StringRequest(
-                                uri.toString(),
-                                responseListener,
-                                errorListener
-                        )
-                )
-            }
+        // if it's in the cache, set it and done
+        imageCache.get(uri.toString())?.also {
+            imageView?.setImageBitmap(it)
         }
 
-    }
+                // otherwise, load, put in cache, and set
+                ?: when (uri.scheme) {
 
-    fun loadImageBitmap(imageView: ImageView?, uri: Uri) {
-        when (uri.scheme) {
-
-            //todo: use cache for asset bitmaps
         // case for assets using AssetContentProvider
             ContentResolver.SCHEME_CONTENT -> {
                 Log.d(TAG, "loadImageBitmap (asset): " + uri)
-                imageView?.setImageURI(uri)
+                val path = uri.pathSegments.joinToString(File.separator) //remove starting forward slash
+                try {
+                    BitmapFactory.decodeStream(assets.open(path))?.also {
+                        imageView?.setImageBitmap(it)
+                        imageCache.put(uri.toString(), it)
+                    }
+                }
+                catch (e: Exception) {
+                    Log.e(TAG, "problem loading bitmap from asset: " + path, e)
+                }
+//                    imageView?.setImageURI(uri)
             }
-            // case for files
+
+        // case for files
             ContentResolver.SCHEME_FILE -> {
                 Log.d(TAG, "loadImageBitmap (file): " + uri)
                 try {
                     imageCache.get(uri.toString()) ?:
                             BitmapFactory.decodeFile(filesDir.resolve(uri.path).path)?.also {
-                                imageCache.put(uri.toString(), it)
                                 imageView?.setImageBitmap(it)
+                                imageCache.put(uri.toString(), it)
                             }
 
                 }
@@ -101,32 +87,26 @@ class App : Application() {
             else -> {
                 Log.d(TAG, "loadImageBitmap (http): " + uri)
                 try {
-                    val bmp = imageCache.get(uri.toString())?.also {
-                        Log.d(TAG, "bitmap found in cache")
-                        imageView?.setImageBitmap(it)
-                    }
-                    if (bmp == null) {
-                        Log.d(TAG, "loading bmp...")
+                    Log.d(TAG, "loading bmp...")
 
-                        requestQueue!!.add(
-                                ImageRequest(
-                                        uri.toString(),
-                                        {
-                                            bitmap: Bitmap ->
-                                            Log.d(TAG, "bitmap loaded: " + uri)
-                                            imageCache.put(uri.toString(), bitmap)
-                                            imageView?.setImageBitmap(bitmap)
-                                        },
-                                        MAX_IMAGE_WIDTH,
-                                        MAX_IMAGE_HEIGHT,
-                                        bitmapConfig,
-                                        {
-                                            volleyError: VolleyError? ->
-                                            throw Exception(volleyError?.message, volleyError?.cause)
-                                        }
-                                )
-                        )
-                    }
+                    requestQueue!!.add(
+                            ImageRequest(
+                                    uri.toString(),
+                                    {
+                                        bitmap: Bitmap ->
+                                        Log.d(TAG, "bitmap loaded: " + uri)
+                                        imageView?.setImageBitmap(bitmap)
+                                        imageCache.put(uri.toString(), bitmap)
+                                    },
+                                    MAX_IMAGE_WIDTH,
+                                    MAX_IMAGE_HEIGHT,
+                                    bitmapConfig,
+                                    {
+                                        volleyError: VolleyError? ->
+                                        throw Exception(volleyError?.message, volleyError?.cause)
+                                    }
+                            )
+                    )
                 }
                 catch (e: Exception)  {
                     Log.e(TAG, "problem loading bitmap from http: " + uri, e)
@@ -134,5 +114,4 @@ class App : Application() {
             }
         }
     }
-
 }

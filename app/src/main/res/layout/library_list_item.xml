@@ -1,44 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_width="match_parent"
     android:background="@drawable/selectable_item_color"
-    android:descendantFocusability="blocksDescendants"
-    android:orientation="vertical"
     android:padding="30dp">
-
-    <com.hyperana.choosebook.SquareImageView
-        android:id="@+id/cover"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/no_image" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/background_light"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:descendantFocusability="blocksDescendants"
+        android:background="@color/colorNeutralLight"
+        android:padding="10dp"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/title"
+
+        <com.hyperana.choosebook.SquareImageView
+            android:id="@+id/cover"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/no_image" />
 
-        <TextView
-            android:id="@+id/author"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="[Untitled]"
+                style="@style/TextItem.Headline" />
+
+            <TextView
+                android:id="@+id/author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/TextItem"
+                android:text="Anonymous" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:visibility="invisible"/>
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+</FrameLayout>

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303f9f</color>
-    <color name="colorAccent">#FF4081</color>
+
+    <!-- mint julep 202030-6b717e-86deb7-f1f2ea-fed766 -->
+    <color name="colorPrimary">#6B717E</color>
+    <color name="colorPrimaryDark">#202030</color>
+    <color name="colorAccent">#86DEB7</color>
+    <color name="colorNeutralLight">#f6f6f1</color>
+    <color name="colorAlert">#FED766</color>
+    <color name="colorNeutralDark">#202030</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

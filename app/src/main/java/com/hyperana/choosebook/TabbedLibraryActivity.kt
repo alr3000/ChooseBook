@@ -12,20 +12,24 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 
 import android.widget.TextView
 import java.io.File
 
-class TabbedLibraryActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener{
+class TabbedLibraryActivity : AppCompatActivity(), View.OnClickListener{
     val TAG = "TabbedLibraryActivity"
 
-    //tab 1
-    val OFFLINE_TAG = "offline"
-    val DEFAULT_SELECTED = OFFLINE_TAG
+   //tab 1
+    var offlineTab: TextView? = null
+    val OFFLINE_TAG = R.string.offline_library_tab
 
     //tab 2
-    val ONLINE_TAG = "online"
+    var onlineTab: TextView? = null
+    val ONLINE_TAG = R.string.online_library_tab
 
+
+    //todo: remember tab selected
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "oncreate")
         super.onCreate(savedInstanceState)
@@ -35,21 +39,16 @@ class TabbedLibraryActivity : AppCompatActivity(), TabLayout.OnTabSelectedListen
         setSupportActionBar(toolbar)
 
         // navigation to online/offline library lists -- set listener and first selected
-        val tabs = (findViewById(R.id.tabs) as TabLayout).also {
-            it.addTab(it.newTab().setCustomView(R.layout.library_tab_offline).also {
-                it.tag = OFFLINE_TAG
-            })
-            it.addTab(it.newTab().setCustomView(R.layout.library_tab_online).also {
-                it.tag = ONLINE_TAG
-            })
-            it.addOnTabSelectedListener(this)
+        offlineTab = (findViewById(R.id.tab1) as? TextView)?.also {
+            it.tag = OFFLINE_TAG
+            it.setOnClickListener(this)
         }
-        (0 .. tabs.tabCount-1).map { tabs.getTabAt(it) }.find { it?.tag == OFFLINE_TAG }!!
-                .also {
-                    onTabSelected(it)
-                }
+        onlineTab = (findViewById(R.id.tab2) as? TextView)?.also {
+            it.tag = ONLINE_TAG
+            it.setOnClickListener(this)
+        }
 
-
+        offlineTab?.performClick()
     }
 
 
@@ -74,17 +73,10 @@ class TabbedLibraryActivity : AppCompatActivity(), TabLayout.OnTabSelectedListen
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onTabReselected(p0: TabLayout.Tab?) {
-        Log.d(TAG, "onTabReselected: " + p0?.tag)
-    }
-
-    override fun onTabUnselected(p0: TabLayout.Tab?) {
-        Log.d(TAG, "onTabUnselected: " + p0?.tag)
-    }
-
-    override fun onTabSelected(p0: TabLayout.Tab?) {
-        Log.d(TAG, "onTabSelected: " + p0?.tag)
-        val fm = when(p0?.tag) {
+    override fun onClick(v: View?) {
+        Log.d(TAG, "onTabSelected: " + v?.tag)
+        listOf(offlineTab, onlineTab).onEach { it?.isSelected = if (v == it) true else false }
+        val fm = when(v?.tag) {
             OFFLINE_TAG -> {
                 // Offline
                 OfflineBookListFragment()
@@ -96,6 +88,7 @@ class TabbedLibraryActivity : AppCompatActivity(), TabLayout.OnTabSelectedListen
         }
         supportFragmentManager.beginTransaction().replace(R.id.page_fragment_container, fm).commit()
     }
+
 
     /**
      * A placeholder fragment containing a simple view.
