@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    >
+    <FrameLayout
+    style="@style/PageItemContainer.Light"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+       <TextView
+            android:id="@+id/pageitem_text"
+            style="@style/PageItemText.Light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/pageitem_linkcontainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:baselineAligned="false"
+        android:weightSum="3">
+
+        <FrameLayout
+            android:id="@+id/pageitem_leftlink"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"></FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/pageitem_centerlink">
+
+
+        </FrameLayout>
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/pageitem_rightlink">
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>

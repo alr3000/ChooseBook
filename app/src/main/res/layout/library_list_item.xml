@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:descendantFocusability="blocksDescendants"
-        android:background="@color/colorNeutralLight"
+        android:background="@color/colorNeutralDark"
         android:padding="10dp"
         android:orientation="vertical">
 
@@ -34,13 +34,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="[Untitled]"
-                style="@style/TextItem.Headline" />
+                style="@style/DarkTextItem.Headline" />
 
             <TextView
                 android:id="@+id/author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/TextItem"
+                style="@style/DarkTextItem"
                 android:text="Anonymous" />
 
         </LinearLayout>

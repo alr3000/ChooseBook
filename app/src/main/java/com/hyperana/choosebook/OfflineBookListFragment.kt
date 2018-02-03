@@ -194,16 +194,17 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
     }
 
     //todo: update the downloads
-    //todo: online books shown disabled after save?
     fun updateDownloadsList() {
-      //listFiles is null if empty
+        //listFiles is null if empty
         downloadBookList =  File(filesPath).listFiles()
                 ?.map {
-                    it.listFiles().find { it.extension == "json"}
-                            ?.let {
-                                Log.d(TAG, "updateList created book from " + it.path)
-                                Book(loadString(it.inputStream()), it.name, Uri.fromFile(it.parentFile))
-                            }
+                    Book (
+                            path = it.name,
+                            uri = Uri.fromFile(it),
+                            jsonString = it.listFiles()?.find { it.extension == "json" }?.inputStream()?.let {
+                                loadString(it)
+                            } ?: ""
+                    )
                 }
                 ?.filterNotNull()
                 ?: listOf()
@@ -212,7 +213,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
     //prompts remove, open, cancel
     fun promptRemoveBook(book: Book) {
         AlertDialog.Builder(activity).apply {
-            setMessage(resources.getString(R.string.alert_delete_book).plus(book.title))
+            setMessage(resources.getString(R.string.alert_delete_book).plus(" " + book.title))
             setPositiveButton(R.string.alert_delete, {
                 dialog: DialogInterface, which: Int ->
                 deleteBook(book.path!!)
@@ -228,10 +229,11 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
     }
 
     //removeDownloadedBook(bookpath)
-    fun deleteBook(path: String) {
-        Log.d(TAG, "deleteBook: " + path)
-        if (!File(path).deleteRecursively()) {
-            throw Exception("book directory not deleted at " + path)
+    fun deleteBook(bookPath: String) {
+        Log.d(TAG, "deleteBook: " + bookPath)
+        val dir = File(filesPath).resolve(bookPath)
+        if (!dir.exists() || !dir.deleteRecursively()) {
+            throw Exception("book directory not deleted at " + dir.path)
         }
     }
 

@@ -113,6 +113,7 @@ class BookActivity :
             }
         }
         catch (e: Exception) {
+            //todo: display error message
             Log.e(TAG, "problem with loaded book json", e)
             book = null
         }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- todo: set padding to keep text within background shape, make new arrow state list drawable -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/PageItemLink"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp">
+
+    <ImageView
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:rotation="-90"
+        android:scaleType="fitXY"
+        android:src="@drawable/selectable_arrow" />
+
+
+    <TextView
+        android:id="@id/pageitem_text"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_vertical|center"
+        android:text="@android:string/ok"
+        android:textAlignment="center"
+        android:textColor="@color/selectable_item"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+</FrameLayout>

@@ -43,75 +43,80 @@ class App : Application() {
 
     //todo: make async?
     fun loadImageBitmap(imageView: ImageView?, uri: Uri) {
+        try {
+            if (uri == Uri.EMPTY) {
+                throw Exception("uri is empty");
+            }
 
-        // if it's in the cache, set it and done
-        imageCache.get(uri.toString())?.also {
-            imageView?.setImageBitmap(it)
-        }
+            // if it's in the cache, set it and done
+            imageCache.get(uri.toString())?.also {
+                imageView?.setImageBitmap(it)
+            }
 
-                // otherwise, load, put in cache, and set
-                ?: when (uri.scheme) {
+                    // otherwise, load, put in cache, and set
+                    ?: when (uri.scheme) {
 
-        // case for assets using AssetContentProvider
-            ContentResolver.SCHEME_CONTENT -> {
-                Log.d(TAG, "loadImageBitmap (asset): " + uri)
-                val path = uri.pathSegments.joinToString(File.separator) //remove starting forward slash
-                try {
-                    BitmapFactory.decodeStream(assets.open(path))?.also {
-                        imageView?.setImageBitmap(it)
-                        imageCache.put(uri.toString(), it)
+            // case for assets using AssetContentProvider
+                ContentResolver.SCHEME_CONTENT -> {
+                    Log.d(TAG, "loadImageBitmap (asset): " + uri)
+                    val path = uri.pathSegments.joinToString(File.separator) //remove starting forward slash
+                    try {
+                        BitmapFactory.decodeStream(assets.open(path))?.also {
+                            imageView?.setImageBitmap(it)
+                            imageCache.put(uri.toString(), it)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "problem loading bitmap from asset: " + path, e)
+                    }
+//                    imageView?.setImageURI(uri)
+                }
+
+            // case for files
+                ContentResolver.SCHEME_FILE -> {
+                    Log.d(TAG, "loadImageBitmap (file): " + uri)
+                    try {
+                        imageCache.get(uri.toString()) ?:
+                                BitmapFactory.decodeFile(filesDir.resolve(uri.path).path)?.also {
+                                    imageView?.setImageBitmap(it)
+                                    imageCache.put(uri.toString(), it)
+                                }
+
+                    } catch (e: Exception) {
+                        Log.e(TAG, "problem loading bitmap from file: " + uri, e)
                     }
                 }
-                catch (e: Exception) {
-                    Log.e(TAG, "problem loading bitmap from asset: " + path, e)
-                }
-//                    imageView?.setImageURI(uri)
-            }
+            // otherwise try the internet...
+                else -> {
+                    Log.d(TAG, "loadImageBitmap (http): " + uri)
+                    try {
+                        Log.d(TAG, "loading bmp...")
 
-        // case for files
-            ContentResolver.SCHEME_FILE -> {
-                Log.d(TAG, "loadImageBitmap (file): " + uri)
-                try {
-                    imageCache.get(uri.toString()) ?:
-                            BitmapFactory.decodeFile(filesDir.resolve(uri.path).path)?.also {
-                                imageView?.setImageBitmap(it)
-                                imageCache.put(uri.toString(), it)
-                            }
-
-                }
-                catch (e: Exception) {
-                    Log.e(TAG, "problem loading bitmap from file: " + uri, e)
-                }
-            }
-        // otherwise try the internet...
-            else -> {
-                Log.d(TAG, "loadImageBitmap (http): " + uri)
-                try {
-                    Log.d(TAG, "loading bmp...")
-
-                    requestQueue!!.add(
-                            ImageRequest(
-                                    uri.toString(),
-                                    {
-                                        bitmap: Bitmap ->
-                                        Log.d(TAG, "bitmap loaded: " + uri)
-                                        imageView?.setImageBitmap(bitmap)
-                                        imageCache.put(uri.toString(), bitmap)
-                                    },
-                                    MAX_IMAGE_WIDTH,
-                                    MAX_IMAGE_HEIGHT,
-                                    bitmapConfig,
-                                    {
-                                        volleyError: VolleyError? ->
-                                        throw Exception(volleyError?.message, volleyError?.cause)
-                                    }
-                            )
-                    )
-                }
-                catch (e: Exception)  {
-                    Log.e(TAG, "problem loading bitmap from http: " + uri, e)
+                        requestQueue!!.add(
+                                ImageRequest(
+                                        uri.toString(),
+                                        {
+                                            bitmap: Bitmap ->
+                                            Log.d(TAG, "bitmap loaded: " + uri)
+                                            imageView?.setImageBitmap(bitmap)
+                                            imageCache.put(uri.toString(), bitmap)
+                                        },
+                                        MAX_IMAGE_WIDTH,
+                                        MAX_IMAGE_HEIGHT,
+                                        bitmapConfig,
+                                        {
+                                            volleyError: VolleyError? ->
+                                            throw Exception(volleyError?.message, volleyError?.cause)
+                                        }
+                                )
+                        )
+                    } catch (e: Exception) {
+                        Log.e(TAG, "problem loading bitmap from http: " + uri, e)
+                    }
                 }
             }
+        }
+        catch(e: Exception) {
+            Log.e(TAG, "problem loading bmp " + uri.toString(), e)
         }
     }
 }

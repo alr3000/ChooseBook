@@ -194,7 +194,7 @@ open class Book() {
     var resources: List<String> = listOf() // list of filenames
 
 
-    // todo: Book takes json inputstream (and parent uri) so it can make new uri's from relative paths in json
+    // todo: Book takes json strinf (and parent uri) so it can make new uri's from relative paths in json
     constructor(jsonString: String,  path: String, uri: Uri) : this() {
         Log.d(TAG, "init: " + uri)
         this.path = path
@@ -232,7 +232,7 @@ open class Book() {
            // create page data map:
            // expects to find "pages" -> a list of page maps
            // in each page is expected a "title" -> string, and "contents" -> a list of maps
-           pageScheme = ((jBook["pages"] as? List<Any?>) ?: Collections.EMPTY_LIST)
+           pageScheme = ((jBook["page"] as? List<Any?>) ?: Collections.EMPTY_LIST)
 
        }
        catch(e: Exception) {
@@ -272,7 +272,8 @@ open class Book() {
 
 
     // inspects object, returns initialized item (text, image, choice, etc) or null if no suitable item
-    fun createPageItem(map: Any?) : PageItem? {
+    fun createPageItem(anyMap: Any?) : PageItem? {
+        val map = anyMap as? Map<String, Any?>
         try {
             map as Map<String, Any?>
             if (map.contains("text")) return PageItemText(map["text"].toString())
@@ -283,14 +284,23 @@ open class Book() {
                         rightLink = map["rightLink"] as? Map<String, String>,
                         leftLink = map["leftLink"] as? Map<String, String>
                 )
-            if (map.contains("links"))
-                return PageItemChoiceBox(prompt = map["prompt"].toString(),
-                        links = map["links"] as List<Map<String, String>>)
-
-            else throw Exception("item doesn't fit any page item pageScheme")
+            if (map.contains("link")) {
+                val links = map["link"] as List<Map<String, String>>
+                return if (links.count() > 0) PageItemChoiceBox(
+                        prompt = map["prompt"].toString(),
+                        links = links
+                )
+                else PageItemRLChoice(
+                        prompt = map["prompt"].toString(),
+                        leftLink = if (links.count() > 1) links.getOrNull(0) else null,
+                        rightLink = if (links.count() > 1) links.getOrNull(1) else null,
+                        centerLink = if (links.count() > 1) links.getOrNull(2) else links.get(0)
+                )
+            }
+            else throw Exception("item doesn't fit any page item pageScheme: " + map.toString())
         }
         catch (e: Exception) {
-            Log.e(TAG, "problem createpageitem", e)
+            Log.e(TAG, "problem createpageitem: " + map?.toString(), e)
             return null
         }
     }
@@ -315,7 +325,6 @@ class PageItemText(val text: String = "") : PageItem() {
 
     override fun getView(parent: ViewGroup, convertView: View?, pageListener: PageListener?) : View {
         Log.d(TAG, "getView")
-
         return convertView ?: View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
             (findViewById(textId) as? TextView)?.text = text
@@ -343,50 +352,66 @@ class PageItemImage(val uri: Uri?) : PageItem() {
 
 class PageItemRLChoice(val prompt: String = "",
                        val rightLink: Map<String, String>? = null,
-                       val leftLink: Map<String, String>? = null ) : PageItem() {
+                       val leftLink: Map<String, String>? = null,
+                       val centerLink: Map<String, String>? = null) : PageItem() {
 
-    val TAG = "PageItemChoice"
-    val viewId = R.layout.pageitem_rlchoicelayout
+    val TAG = "PageItemRLChoice"
+    val viewId = R.layout.pageitem_choicebox_horizontal
+    val linkId = R.layout.pageitem_link_down
     val promptId = R.id.pageitem_text
+    val linkTextId = R.id.pageitem_text
     val rightLinkId = R.id.pageitem_rightlink
     val leftLinkId = R.id.pageitem_leftlink
+    val centerLinkId = R.id.pageitem_centerlink
+
+
 
     override fun getView(parent: ViewGroup, convertView: View?, pageListener: PageListener?) : View {
-        Log.d(TAG, "getView")
+        Log.d(TAG, "getView: " + listOf(rightLink, centerLink, leftLink).joinToString())
 
-        return convertView ?: View.inflate(parent.context, viewId, null).apply {
-            parent.addView(this)
-            (findViewById(promptId) as? TextView)?.text = prompt
-
-            (findViewById(rightLinkId) as? TextView)?.apply {
-                if (rightLink != null) {
-                    text = rightLink["text"]
-                    setOnClickListener {
-                        try {
-                            Log.d(TAG, "onClick link " + text + "->" + rightLink["to"])
-                            pageListener?.onPageChange(rightLink["to"]!!)
-                        }
-                        catch (e: Exception) {
-                            Log.e(TAG, "problem onClick link " + text + "->" + rightLink["to"])
-                        }
+        fun createLinkView(map: Map<String, String>, parent: ViewGroup) : View {
+            return View.inflate(parent.context, linkId, parent).apply {
+                (findViewById(linkTextId) as TextView).text = map["text"]
+                setOnClickListener {
+                    try {
+                        pageListener?.onPageChange(map["toPage"]!!)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "problem onClick link " + map.toString(), e)
                     }
+                }
+            }
+        }
+            // todo: make use of convertview if possible
+        return  View.inflate(parent.context, viewId, null).apply {
+            parent.addView(this)
+            (findViewById(promptId) as? TextView)?.apply {
+                if (prompt.isEmpty()) {
+                    (this.parent as? ViewGroup)?.visibility = View.GONE
+                } else {
+                    text = prompt
+                }
+            }
+
+            (findViewById(rightLinkId) as ViewGroup).apply {
+                if (rightLink != null) {
+                    createLinkView(rightLink, this)
                 }
                 else {
                     visibility = View.INVISIBLE
                 }
             }
 
-            (findViewById(leftLinkId) as? TextView)?.apply {
+            (findViewById(leftLinkId) as ViewGroup).apply {
                 if (leftLink != null) {
-                    text = leftLink["text"]
-                    setOnClickListener {
-                        try {
-                            pageListener?.onPageChange(leftLink["to"]!!)
-                        }
-                        catch (e: Exception) {
-                            Log.e(TAG, "problem onClick link " + text + "->" + leftLink["to"])
-                        }
-                    }
+                    createLinkView(leftLink, this)
+                }
+                else {
+                    visibility = View.INVISIBLE
+                }
+            }
+            (findViewById(centerLinkId) as ViewGroup).apply {
+                if (centerLink != null) {
+                    createLinkView(centerLink, this)
                 }
                 else {
                     visibility = View.INVISIBLE
@@ -398,35 +423,45 @@ class PageItemRLChoice(val prompt: String = "",
 
 class PageItemChoiceBox( var prompt: String = "",
                          var links: List<Map<String, String?>> = listOf()) : PageItem() {
-    val TAG = "PageItemChoice"
-    val viewId = R.layout.pageitem_choiceboxlayout
+    val TAG = "PageItemChoiceBox"
     val promptId = R.id.pageitem_text
     val choiceBoxId = R.id.pageitem_linkcontainer
-    val linkViewId = R.layout.pageitem_link
-    val linkTextId = linkViewId
+    val linkViewId = R.layout.pageitem_link_right
+    val linkTextId = R.id.pageitem_text
+
+    override fun toString(): String {
+        return TAG + "{ " + prompt + ": " + links.joinToString() + " }"
+    }
 
     override fun getView(parent: ViewGroup, convertView: View?, pageListener: PageListener?) : View {
-        Log.d(TAG, "getView")
+        Log.d(TAG, "getView: " + toString())
 
-        return convertView ?: View.inflate(parent.context, viewId, null).also {
+        return convertView ?: View.inflate(parent.context,  R.layout.pageitem_choiceboxlayout, null).also {
             parent.addView(it)
-            (it.findViewById(promptId) as? TextView)?.text = prompt
+            (it.findViewById(promptId) as? TextView)?.apply {
+                if (prompt.isEmpty()) {
+                    visibility = View.GONE
+                } else {
+                    text = prompt
+                }
+            }
             val box = (it.findViewById(choiceBoxId) as? ViewGroup)
             links.onEach {
-                val to = it["to"]!!
+                val to = it["toPage"]!!
                 val text = it["text"]!!
-                (View.inflate(parent.context, linkViewId, null) as TextView).also {
-                    it.text = text
-                    it.setOnClickListener {
-                        try {
-                            pageListener?.onPageChange(to)
+                box?.addView(
+                        (View.inflate(parent.context, linkViewId, null) as ViewGroup).also {
+                            (it.findViewById(linkTextId) as? TextView)?.text = text
+
+                            it.setOnClickListener {
+                                try {
+                                    pageListener?.onPageChange(to)
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "problem onClick link " + text + "->" + to)
+                                }
+                            }
                         }
-                        catch (e: Exception) {
-                            Log.e(TAG, "problem onClick link " + text + "->" + to)
-                        }
-                    }
-                    box?.addView(it)
-                }
+                )
             }
         }
     }

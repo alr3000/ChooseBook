@@ -27,22 +27,27 @@
     </style>
 
     <style name="PageItemContainer" parent="AppTheme">
-        <item name="android:background">@color/colorNeutralLight</item>
        <item name="android:padding">10dp</item>
-        <item name="android:textColor">@color/colorNeutralDark</item>
-        <item name="android:layout_margin">20dp</item>
     </style>
 
     <style name="PageItemImage" parent="AppTheme"></style>
 
     <style name="PageItemText" parent="AppTheme">
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:typeface">sans</item>
+     </style>
 
+    <style name="PageItemText.Light" parent="PageItemText">
+        <item name="android:background">@color/colorNeutralLight</item>
+        <item name="android:textColor">@color/colorNeutralDark</item>
     </style>
 
     <style name="PageItemLink" parent="AppTheme">
-        <item name="android:background">@drawable/selectable_item_color</item>
-        <item name="android:padding">40dp</item>
-        <item name="android:layout_margin">10dp</item>
+
     </style>
 
     <style name="ActionBar" parent="AppTheme">
@@ -72,17 +77,21 @@
         <item name="android:textSize">24sp</item>
         <item name="android:textStyle">bold</item>
     </style>
-    <style name="TextItem">
+    <style name="DarkTextItem">
         <item name="android:padding">1dp</item>
         <item name="android:paddingTop">5dp</item>
-        <item name="android:textColor">@color/colorNeutralDark</item>
+        <item name="android:textColor">@color/colorNeutralLight</item>
     </style>
 
-    <style name="TextItem.Headline" parent="TextItem">
+    <style name="DarkTextItem.Headline" parent="DarkTextItem">
         <item name="android:textSize">24sp</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="PageItemContainer.Light" parent="PageItemContainer">
+        <item name="android:background">@color/colorNeutralShade</item>
+      </style>
 
 
 </resources>

@@ -4,10 +4,11 @@
     <!-- mint julep 202030-6b717e-86deb7-f1f2ea-fed766 -->
     <color name="colorPrimary">#6B717E</color>
     <color name="colorPrimaryDark">#202030</color>
-    <color name="colorAccent">#86DEB7</color>
+    <color name="colorAccent">#86deb7</color>
     <color name="colorNeutralLight">#f6f6f1</color>
     <color name="colorAlert">#FED766</color>
     <color name="colorNeutralDark">#202030</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="colorNeutralShade">#e8e8d7</color>
 </resources>
