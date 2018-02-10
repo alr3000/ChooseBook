@@ -1,6 +1,5 @@
 package com.hyperana.choosebook
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -27,7 +26,7 @@ class PageFragment : Fragment() {
     private var mParam1: String? = null
     private var mParam2: String? = null
 
-    private var mPageListener: PageListener? = null
+    private var mPageItemListener: PageItemListener? = null
     private var mListener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,11 +115,11 @@ class PageFragment : Fragment() {
          * @return A new instance of fragment PageFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(page: List<PageItem>, pageListener: PageListener): Fragment {
+        fun newInstance(page: List<PageItem>, pageItemListener: PageItemListener): Fragment {
             Log.d("PageFragment", "newInstance with " + page.count() + " items")
             val fragment = PageFragment()
             fragment.mPage = page
-            fragment.mPageListener = pageListener
+            fragment.mPageItemListener = pageItemListener
 
             val args = Bundle()
             fragment.arguments = args
@@ -133,7 +132,7 @@ class PageFragment : Fragment() {
         if (mPage != null) {
             container.removeAllViews()
             mPage!!.onEach {
-                it.getView(container, null, mPageListener)
+                it.getView(container, null, mPageItemListener)
             }
         }
     }

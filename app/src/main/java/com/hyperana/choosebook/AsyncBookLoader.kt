@@ -24,6 +24,7 @@ class AsyncBookLoader(
         onContentChanged()
     }
 
+    //todo: cache all bmps from resource list at this time
     override fun loadInBackground(): Book {
         Log.d(TAG, "loadInBackground")
 
