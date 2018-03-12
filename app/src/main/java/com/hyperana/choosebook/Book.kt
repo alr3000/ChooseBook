@@ -1,5 +1,7 @@
 package com.hyperana.choosebook
 
+import android.content.ContentProvider
+import android.content.ContentResolver
 import android.content.res.AssetManager
 import android.net.Uri
 import android.util.Log
@@ -166,7 +168,9 @@ fun BookFromAsset(assets: AssetManager, bookPath: String) : Book? {
         return Book(
                 jsonString = loadString(assets.open(File(bookPath, json).path)),
                 path = bookPath,
-                uri = AssetContentProvider.CONTENT_URI.buildUpon().appendPath(bookPath).build()
+                uri = Uri.fromParts(ContentResolver.SCHEME_CONTENT, "", "")
+                        .buildUpon().appendPath(bookPath).build()
+                        .also { Log.d("BookFromAsset", it.toString())}
         )
     }
     catch (e: Exception) {
@@ -192,7 +196,7 @@ open class Book() {
     var resources: List<String> = listOf() // list of filenames
 
 
-    // todo: Book takes json strinf (and parent uri) so it can make new uri's from relative paths in json
+    //Book takes json string (and parent uri) so it can make new uri's from relative paths in json
     constructor(jsonString: String,  path: String, uri: Uri) : this() {
         Log.d(TAG, "init: " + uri)
         this.path = path
@@ -204,7 +208,7 @@ open class Book() {
     // fills out Book properties except for pages (assigns pageScheme = list of objects(pages))
    fun parseJsonStream() {
        try {
-           //todo: make async json parse
+           //todo: -?- make async json parse
            val jBook: Map<String, Any?> = parseJsonObject(JSONObject(jsonString))
            Log.d(TAG, "parseJsonStream  -> " + jBook.size)
 
@@ -213,8 +217,7 @@ open class Book() {
            author = (jBook["author"] as? String) ?: author
            id = (jBook["id"] as? Long) ?: (Math.random()*100000).toLong() // for listadapter??
 
-           //todo: load thumbnail into contentprovider, store content Uri
-           thumb = (jBook["thumbnail"] as? String)
+           thumb = ((jBook["thumbnail"] as? String) ?: (jBook["thumb"] as? String))
                    ?.let {
                        getResourceUri(it)
                    }

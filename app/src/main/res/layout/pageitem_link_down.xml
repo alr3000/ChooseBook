@@ -26,7 +26,7 @@
         android:layout_gravity="center"
         android:text="@android:string/ok"
         android:textAlignment="center"
-        android:textColor="@color/selectable_item"
+        android:textColor="@color/selectable_arrow_text"
         android:textSize="18sp"
         android:textStyle="bold" />
 </FrameLayout>

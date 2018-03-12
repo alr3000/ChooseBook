@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- background for activating items -->
+<!-- background for activating text items, use with textColor = selectable_text -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- light background -->
     <item android:drawable="@color/colorAlert"
         android:state_pressed="true"/>
+
+    <!-- dark background -->
+    <item android:drawable="@color/colorNeutralDark"
+        android:state_activated="true" />
+
+    <!-- light background -->
     <item android:drawable="@color/colorAccent"
         android:state_focused="true" />
     <item android:drawable="@color/colorAccent"
-        android:state_activated="true" />
-    <item android:drawable="@color/colorAccent"
         android:state_selected="true" />
-
-    <!-- regular background -->
-    <item android:drawable="@android:color/transparent"/> <!-- default last -->
+    <item android:drawable="@color/colorNeutralLight"/> <!-- default last -->
 </selector>

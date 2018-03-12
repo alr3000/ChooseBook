@@ -136,4 +136,8 @@ class PageFragment : Fragment() {
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }// Required empty public constructor

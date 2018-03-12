@@ -14,14 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
-        <provider
-            android:name=".AssetContentProvider"
-            android:authorities="com.hyperana.choosebook.provider"
-            android:enabled="true"
-            android:exported="false" />
-
         <activity
             android:name=".BookActivity"
+            android:label="@string/app_name">
+        </activity>
+
+        <activity
+            android:name=".LoadAllActivity"
             android:label="@string/app_name">
         </activity>
 

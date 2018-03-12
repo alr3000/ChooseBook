@@ -37,13 +37,14 @@
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
         <item name="android:paddingTop">20dp</item>
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:typeface">sans</item>
+       <!--  <item name="android:stateListAnimator">@animator/selectable_text</item> -->
      </style>
 
     <style name="PageItemText.Light" parent="PageItemText">
-        <item name="android:background">@color/colorNeutralLight</item>
-        <item name="android:textColor">@color/colorNeutralDark</item>
+        <item name="android:background">@drawable/selectable_text_bkgd</item>
+        <item name="android:textColor">@color/selectable_text</item>
     </style>
 
     <style name="PageItemLink" parent="AppTheme">

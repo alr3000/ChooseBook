@@ -63,7 +63,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
             Log.d(TAG, "onCreate")
 
             // set paths to watch
-            filesPath = File(activity.filesDir, OFFLINE_BOOKS_DIR).path
+            filesPath = (activity.application as App).savedBookDir!!.path
             assetPath = ASSETS_BOOK_DIR
 
 

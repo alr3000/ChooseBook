@@ -1,5 +1,7 @@
 package com.hyperana.choosebook
 
+import android.app.Activity
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import android.view.View
@@ -12,17 +14,19 @@ import android.widget.TextView
  */
 
 interface PageItemListener {
-    fun onPageChange(toName: String) : Boolean
+    fun onLinkClick(v: View, toName: String)
     fun onTextClick(v: TextView)
     fun onImageClick(v: ImageView)
-    fun onChoiceClick(texts: List<TextView>)
+    fun onChoiceClick(texts: List<View>)
 }
 
 abstract class PageItem {
     abstract fun getView(parent: ViewGroup, convertView: View?, pageItemListener: PageItemListener?) : View
+    fun getTextViews() : List<TextView> {
+        return listOf()
+    }
 }
 
-//todo: add TTS
 class PageItemText(val text: String = "") : PageItem() {
     val TAG = "PageItemText"
     val viewId = R.layout.pageitem_textlayout
@@ -54,7 +58,11 @@ class PageItemImage(val uri: Uri) : PageItem() {
         return convertView ?: View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
             (findViewById(imageId) as? ImageView)?.also {
-                (parent.context.applicationContext as? App)?.loadImageBitmap(it, uri)
+                (parent.context.applicationContext as? App)?.loadImageBitmap(uri, object: App.BitmapListener {
+                    override fun onBitmap(bitmap: Bitmap?) {
+                        (it.context as? Activity)?.runOnUiThread { it.setImageBitmap(bitmap) }
+                    }
+                })
                 it.setOnClickListener {
                     pageItemListener?.onImageClick(it as ImageView)
                 }
@@ -84,25 +92,24 @@ class PageItemRLChoice(val prompt: String = "",
     override fun getView(parent: ViewGroup, convertView: View?, pageItemListener: PageItemListener?) : View {
         Log.d(TAG, "getView: " + listOf(rightLink, centerLink, leftLink).joinToString())
 
-        val texts: ArrayList<TextView> = arrayListOf()
+        val texts: ArrayList<View> = arrayListOf()
 
         fun createLinkView(map: Map<String, String>, parent: ViewGroup) : View {
             return View.inflate(parent.context, linkId, parent).apply {
                 (findViewById(linkTextId) as TextView).also {
                     it.text = map["text"]
-                    texts.add(it)
                     setOnClickListener {
                         try {
-                            pageItemListener?.onPageChange(map["toPage"]!!)
+                            pageItemListener?.onLinkClick(it, map["toPage"]!!)
                         } catch (e: Exception) {
                             Log.e(TAG, "problem onClick link " + map.toString(), e)
                         }
                     }
                 }
+                texts.add(this)
             }
         }
 
-        // todo: make use of convertview if possible
         return View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
             (findViewById(promptId) as? TextView)?.apply {
@@ -183,7 +190,7 @@ class PageItemChoiceBox( var prompt: String = "",
 
                                 it.setOnClickListener {
                                     try {
-                                        pageItemListener?.onPageChange(to)
+                                        pageItemListener?.onLinkClick(it, to)
                                     } catch (e: Exception) {
                                         Log.e(TAG, "problem onClick link " + text + "->" + to)
                                     }

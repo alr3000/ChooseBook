@@ -29,8 +29,7 @@ val EXTRA_URI_STRING = "uriString"
 class BookActivity :
         AppCompatActivity(),
         PageFragment.OnFragmentInteractionListener,
-        PageItemListener,
-        LoaderManager.LoaderCallbacks<Book>
+        PageItemListener // TextToSpeech.OnInitListener
 {
 
     val TAG = "BookActivity"
@@ -41,7 +40,8 @@ class BookActivity :
     //**************************** TTS Utterance Implementation ***********************
     var TTS: TextToSpeech? = null
         get() {
-            field = field ?: TextToSpeech(this, {
+            // use application context because tts will bind a service that may outlast the activity
+            field = field ?: TextToSpeech(applicationContext, {
                 status ->
                 Log.d(TAG, "TTS status: " + status)
                 if (status == ERROR) {
@@ -53,15 +53,14 @@ class BookActivity :
             return field
         }
 
-    val utteranceMap: MutableMap<String, TextView> = mutableMapOf()
+    val utteranceMap: MutableMap<String, View> = mutableMapOf()
 
     val utteranceListener = object: UtteranceProgressListener() {
         val TAG = "UtteranceProgress"
 
-        fun highlight(v: TextView, isActive: Boolean = true) {
+        fun highlight(v: View, isActive: Boolean = true) {
             runOnUiThread {
-                v.setTextColor(if (isActive) resources.getColor(R.color.colorAccent)
-                else resources.getColor(R.color.colorNeutralDark))
+                v.isActivated = isActive
             }
         }
 
@@ -88,6 +87,9 @@ class BookActivity :
 
         override fun onError(utteranceId: String?) {
             Log.d(TAG, "onError: " + utteranceId)
+            utteranceMap[utteranceId]?.also {
+                highlight(it, false)
+            }
         }
     }
 
@@ -98,11 +100,16 @@ class BookActivity :
     }
 
     //todo: -L- add highlight view
-    fun speakTextView(v: TextView, interrupt: Boolean = true) {
+    //todo: speakTextView should return a listener object for that utterance/view
+    fun speakTextView(v: View, interrupt: Boolean = true) {
+
         TTS?.apply {
             val id = randomString(8)
             utteranceMap.put(id, v)
-            speak(v.text, if (interrupt) QUEUE_FLUSH else QUEUE_ADD, Bundle(), id)
+            ((v as? TextView) ?: ((v as? ViewGroup)?.findViewById(R.id.pageitem_text)) as? TextView)
+                    ?.also {
+                        speak(it.text, if (interrupt) QUEUE_FLUSH else QUEUE_ADD, Bundle(), id)
+                    }
         }
     }
 
@@ -113,15 +120,20 @@ class BookActivity :
             Log.d(TAG, "onCreate")
             setContentView(R.layout.activity_book)
 
-
-            //get book file uri from intent
-            val loaderArgs = Bundle().apply {
-                putString(EXTRA_URI_STRING, intent.data.toString())
+            intent.data!!.also {
+                (application as App).loadString(it.buildUpon().appendPath(BOOK_FILENAME).build(),
+                      object: App.StringListener {
+                          override fun onString(string: String?) {
+                              Log.d(TAG, "loadString listener: " + string?.length)
+                              book = Book( string ?: "", it.lastPathSegment, it)
+                              setBook()
+                          }
+                      }
+                )
             }
 
-            // start book load
-            loaderId = (Math.random()*1000).toInt()
-            supportLoaderManager.initLoader(loaderId, loaderArgs, this)
+            //start up TTS:
+            interruptSpeak()
 
         }
         catch (e: Exception) {
@@ -129,26 +141,24 @@ class BookActivity :
         }
     }
 
-  /*  // handle user click to change page
-    override fun onPageChange(toName: String) : Boolean {
-        Log.d(TAG, "onPageChange to " + toName)
-        try {
-            setPage(book!!.pages[toName]!!)
-        }
-        catch (e: Exception) {
-            Log.e(TAG, "problem onPageChange to " + toName, e)
-        }
-        return false
-    }*/
+
 
     //todo: -L- touch zooms/pans in a spiral or masks on larger screens and reads text until release?
     //todo: -L- items with "touch" property can have .wav or alt image or sprite
+    //todo: -L- new pages appear below old in a long scroll "history"
 
     //todo: -L- save page on activity.backpressed, offer choice to resume
+
     // release TTS resources
     override fun onPause() {
         super.onPause()
-        TTS?.stop()
+        TTS?.shutdown()
+        TTS = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        TTS?.shutdown()
         TTS = null
     }
 
@@ -158,26 +168,7 @@ class BookActivity :
         interruptSpeak()
     }
 
-    //**************** AsyncBookLoader Callbacks ********************
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Book>? {
-        try {
-            Log.d(TAG, "onCreateLoader: " + id)
-
-            return AsyncBookLoader(
-                    this,
-                    Uri.parse(args!!.getString(EXTRA_URI_STRING)),
-                    BOOK_FILENAME)
-        }
-        catch (e: Exception) {
-            Log.e(TAG, "problem creating book loader", e)
-            return null
-        }
-    }
-
-    override fun onLoadFinished(loader: Loader<Book>?, data: Book?) {
-        Log.d(TAG, "onLoaderFinished: " + data?.parentUri)
-        try {
-            book = data!!
+ fun setBook() {
 
             //set activity title
             title = book!!.title
@@ -197,30 +188,20 @@ class BookActivity :
                         )
                         .commitAllowingStateLoss() //Should check if activity is still on top?
             }
-        }
-        catch (e: Exception) {
-            //todo: display error message
-            Log.e(TAG, "problem with loaded book json", e)
-            book = null
-        }
-
     }
-
-    // loader is destroyed -- data (book) is unavailable
-    override fun onLoaderReset(loader: Loader<Book>?) {
-        Log.d(TAG, "onLoaderReset: " + loader?.id)
-        book = null
-    }
-
 
 
     //************************ PageItemListener Implementation **********************
-    override fun onPageChange(toName: String): Boolean {
-        Log.d(TAG, "onPageChange to " + toName)
+    override fun onLinkClick(v: View, toName: String) {
+        Log.d(TAG, "onLinkClick to " + toName)
+        v.isActivated = true
+        (v.findViewById(R.id.pageitem_text) as? TextView)?.also{ speakTextView(it)}
+
+        Handler().postDelayed( {
         book?.pages?.get(toName)?.also {
              setPage(Pair(toName, it))
         }
-        return true
+        }, 1000)
     }
 
 
@@ -231,8 +212,8 @@ class BookActivity :
     }
 
     // speak prompt and each link in turn with highlights
-    override fun onChoiceClick(texts: List<TextView>) {
-        Log.d(TAG, "onChoiceClick")
+    override fun onChoiceClick(texts: List<View>) {
+        Log.d(TAG, "onChoiceClick: " + texts.count() + " texts")
 
         interruptSpeak()
 
@@ -302,7 +283,7 @@ class BookActivity :
                             setRectToRect(
                                     RectF(scaledRect.apply {offsetTo(pt.x, pt.y)}),
                                     RectF(viewRect),
-                                    Matrix.ScaleToFit.START
+                                    Matrix.ScaleToFit.FILL //START
                             )
                         }
                     }

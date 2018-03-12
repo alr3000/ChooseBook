@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- use with selectable_text_bkgd -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- light background -->
+    <item android:color="@color/colorNeutralDark"
+        android:state_pressed="true"/>
+
+    <!-- dark background -->
+    <item android:color="@color/colorAlert"
+        android:state_activated="true" />
+
+    <!-- light background -->
+    <item android:color="@color/colorNeutralDark"
+        android:state_selected="true" />
+    <item android:color="@color/colorNeutralDark"
+        android:state_focused="true" />
+    <item android:color="@color/colorNeutralDark"/> <!-- default last -->
+</selector>

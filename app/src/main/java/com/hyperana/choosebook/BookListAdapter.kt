@@ -3,6 +3,7 @@ package com.hyperana.choosebook
 import android.app.Activity
 import android.content.Context
 import android.database.DataSetObserver
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.FileObserver
 import android.util.Log
@@ -60,9 +61,14 @@ class BookListAdapter(val activity: Activity) : BaseAdapter() {
                         (findViewById(R.id.author) as? TextView)?.text = book.author
 
                         //set cover image
-                        (findViewById(R.id.cover) as? ImageView)?.apply {
-                            setImageResource(R.drawable.no_image)
-                            (activity.application as App).loadImageBitmap(this, book.thumb)
+                        Log.d(TAG, "book.thumb: " + book.thumb)
+                        (findViewById(R.id.cover) as? ImageView)?.also {
+                            it.setImageResource(R.drawable.no_image)
+                            (activity.application as App).loadImageBitmap(book.thumb, object: App.BitmapListener {
+                                override fun onBitmap(bitmap: Bitmap?) {
+                                    activity.runOnUiThread { it.setImageBitmap(bitmap) }
+                                }
+                            })
                         }
                     }
                     catch(e: Exception) {

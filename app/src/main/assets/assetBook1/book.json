@@ -27,6 +27,9 @@
                     {
                         "text" : "Text for page two. Text for page two."
                     },
+                  {
+                    "image" : "sensoryRoom.jpg"
+                  },
                     {
                         "prompt" : "multiple choice prompt for page two?",
                         "links" : [
