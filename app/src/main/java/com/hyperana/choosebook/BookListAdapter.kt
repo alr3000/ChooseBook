@@ -57,12 +57,12 @@ class BookListAdapter(val activity: Activity) : BaseAdapter() {
                 ))
                 .apply {
                     try {
-                        (findViewById(R.id.title) as? TextView)?.text = book.title
-                        (findViewById(R.id.author) as? TextView)?.text = book.author
+                        (findViewById<TextView?>(R.id.title))?.text = book.title
+                        (findViewById<TextView?>(R.id.author))?.text = book.author
 
                         //set cover image
                         Log.d(TAG, "book.thumb: " + book.thumb)
-                        (findViewById(R.id.cover) as? ImageView)?.also {
+                        (findViewById<ImageView?>(R.id.cover))?.also {
                             it.setImageResource(R.drawable.no_image)
                             (activity.application as App).loadImageBitmap(book.thumb, object: App.BitmapListener {
                                 override fun onBitmap(bitmap: Bitmap?) {

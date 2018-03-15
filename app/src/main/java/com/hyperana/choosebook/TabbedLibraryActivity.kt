@@ -35,15 +35,15 @@ class TabbedLibraryActivity : AppCompatActivity(), View.OnClickListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tabbed_library)
 
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         // navigation to online/offline library lists -- set listener and first selected
-        offlineTab = (findViewById(R.id.tab1) as? TextView)?.also {
+        offlineTab = (findViewById<TextView?>(R.id.tab1))?.also {
             it.tag = OFFLINE_TAG
             it.setOnClickListener(this)
         }
-        onlineTab = (findViewById(R.id.tab2) as? TextView)?.also {
+        onlineTab = (findViewById<TextView?>(R.id.tab2))?.also {
             it.tag = ONLINE_TAG
             it.setOnClickListener(this)
         }
@@ -95,11 +95,9 @@ class TabbedLibraryActivity : AppCompatActivity(), View.OnClickListener{
      */
     class PlaceholderFragment : Fragment() {
 
-        override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
-            val rootView = inflater!!.inflate(R.layout.fragment_tabbed_library_actvity, container, false)
-            val textView = rootView.findViewById(R.id.section_label) as TextView
-            textView.text = getString(R.string.section_format, arguments.getInt(ARG_SECTION_NUMBER))
+            val rootView = inflater.inflate(R.layout.fragment_tabbed_library_actvity, container, false)
             return rootView
         }
 

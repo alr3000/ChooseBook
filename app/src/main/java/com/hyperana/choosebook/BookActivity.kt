@@ -1,6 +1,7 @@
 package com.hyperana.choosebook
 
 import android.animation.*
+import android.annotation.TargetApi
 import android.graphics.Matrix
 import android.graphics.Point
 import android.support.v4.app.LoaderManager
@@ -18,6 +19,7 @@ import android.widget.TextView
 import android.widget.ImageView
 import android.graphics.Rect
 import android.graphics.RectF
+import android.os.Build
 import android.os.Handler
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -93,23 +95,38 @@ class BookActivity :
         }
     }
 
-    fun interruptSpeak() {
+    @TargetApi(21)
+    fun speak(
+            text: String? = "",
+            mode: Int = QUEUE_FLUSH,
+            options: Bundle? = null) : String? {
+
         TTS?.apply {
-            speak("", QUEUE_FLUSH, null, null)
+            if (Build.VERSION.SDK_INT <= 15) {
+                speak(text, mode, hashMapOf<String, String>())
+            }
+            else {
+                val id = randomString(8)
+                speak(text, mode, options, id)
+                return id
+            }
         }
+        return null
+    }
+
+    fun interruptSpeak() {
+        speak("", QUEUE_FLUSH)
     }
 
     //todo: -L- add highlight view
     //todo: speakTextView should return a listener object for that utterance/view
     fun speakTextView(v: View, interrupt: Boolean = true) {
-
-        TTS?.apply {
-            val id = randomString(8)
-            utteranceMap.put(id, v)
-            ((v as? TextView) ?: ((v as? ViewGroup)?.findViewById(R.id.pageitem_text)) as? TextView)
-                    ?.also {
-                        speak(it.text, if (interrupt) QUEUE_FLUSH else QUEUE_ADD, Bundle(), id)
-                    }
+        val textView = (v as? TextView) ?: v.findViewById<TextView?>(R.id.pageitem_text)
+        textView?.also {
+        val utteranceId = speak(it.text?.toString(), if (interrupt) QUEUE_FLUSH else QUEUE_ADD)
+            if (utteranceId != null) {
+                utteranceMap.put(utteranceId, v)
+            }
         }
     }
 
@@ -195,7 +212,7 @@ class BookActivity :
     override fun onLinkClick(v: View, toName: String) {
         Log.d(TAG, "onLinkClick to " + toName)
         v.isActivated = true
-        (v.findViewById(R.id.pageitem_text) as? TextView)?.also{ speakTextView(it)}
+        v.findViewById<TextView>(R.id.pageitem_text)?.also{ speakTextView(it)}
 
         Handler().postDelayed( {
         book?.pages?.get(toName)?.also {
@@ -238,7 +255,7 @@ class BookActivity :
             val viewRect = Rect()
 
 
-            (findViewById(R.id.content_frame) as ViewGroup).apply {
+            (findViewById<ViewGroup>(R.id.content_frame) as ViewGroup).apply {
                 addView(
                         highlight,
                         ViewGroup.LayoutParams.MATCH_PARENT,

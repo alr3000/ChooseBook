@@ -33,28 +33,28 @@ class PageFragment : Fragment() {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
+            mParam1 = arguments!!.getString(ARG_PARAM1)
+            mParam2 = arguments!!.getString(ARG_PARAM2)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         try {
             Log.d(TAG, "onCreateView")
             // Inflate the layout for this fragment
-            return inflater!!.inflate(R.layout.fragment_page, container, false)
+            return inflater.inflate(R.layout.fragment_page, container, false)
         } catch (e: Exception) {
             Log.e(TAG, "problem creating view", e)
             return View(activity)
         }
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         try {
             Log.d(TAG, "onViewCreated")
-            setPageView((view!!.findViewById(R.id.page_container) as ViewGroup))
+            setPageView((view.findViewById<ViewGroup>(R.id.page_container)))
         }catch (e: Exception) {
             Log.e(TAG, "problem setting page view", e)
         }

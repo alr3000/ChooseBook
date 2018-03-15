@@ -36,7 +36,7 @@ class PageItemText(val text: String = "") : PageItem() {
         Log.d(TAG, "getView")
         return View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
-            (findViewById(textId) as? TextView)?.also {
+            (findViewById<TextView?>(textId))?.also {
                 it.text = text
                 it.setOnClickListener {
                     v ->
@@ -57,7 +57,7 @@ class PageItemImage(val uri: Uri) : PageItem() {
 
         return convertView ?: View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
-            (findViewById(imageId) as? ImageView)?.also {
+            (findViewById<ImageView?>(imageId))?.also {
                 (parent.context.applicationContext as? App)?.loadImageBitmap(uri, object: App.BitmapListener {
                     override fun onBitmap(bitmap: Bitmap?) {
                         (it.context as? Activity)?.runOnUiThread { it.setImageBitmap(bitmap) }
@@ -96,7 +96,7 @@ class PageItemRLChoice(val prompt: String = "",
 
         fun createLinkView(map: Map<String, String>, parent: ViewGroup) : View {
             return View.inflate(parent.context, linkId, parent).apply {
-                (findViewById(linkTextId) as TextView).also {
+                (findViewById<TextView>(linkTextId)).also {
                     it.text = map["text"]
                     setOnClickListener {
                         try {
@@ -112,7 +112,7 @@ class PageItemRLChoice(val prompt: String = "",
 
         return View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
-            (findViewById(promptId) as? TextView)?.apply {
+            (findViewById<TextView?>(promptId))?.apply {
                 if (prompt.isEmpty()) {
                     (this.parent as? ViewGroup)?.visibility = View.GONE
                 } else {
@@ -120,7 +120,7 @@ class PageItemRLChoice(val prompt: String = "",
                     texts.add(this)
                 }
             }
-            (findViewById(rightLinkId) as ViewGroup).apply {
+            (findViewById<ViewGroup>(rightLinkId)).apply {
                 if (rightLink != null) {
                     createLinkView(rightLink, this)
                 }
@@ -129,7 +129,7 @@ class PageItemRLChoice(val prompt: String = "",
                 }
             }
 
-            (findViewById(leftLinkId) as ViewGroup).apply {
+            (findViewById<ViewGroup>(leftLinkId)).apply {
                 if (leftLink != null) {
                     createLinkView(leftLink, this)
                 }
@@ -137,7 +137,7 @@ class PageItemRLChoice(val prompt: String = "",
                     visibility = View.INVISIBLE
                 }
             }
-            (findViewById(centerLinkId) as ViewGroup).apply {
+            (findViewById<ViewGroup>(centerLinkId)).apply {
                 if (centerLink != null) {
                     createLinkView(centerLink, this)
                 }
@@ -170,7 +170,7 @@ class PageItemChoiceBox( var prompt: String = "",
         return View.inflate(parent.context,  R.layout.pageitem_choiceboxlayout, null).also {
             parent.addView(it)
 
-            (it.findViewById(promptId) as? TextView)?.apply {
+            (it.findViewById<TextView?>(promptId))?.apply {
                 if (prompt.isEmpty()) {
                     visibility = View.GONE
                 } else {
@@ -178,13 +178,13 @@ class PageItemChoiceBox( var prompt: String = "",
                     texts.add(this)
                 }
             }
-            val box = (it.findViewById(choiceBoxId) as? ViewGroup)
+            val box = (it.findViewById<ViewGroup?>(choiceBoxId))
             links.onEach {
                 val to = it["toPage"]!!
                 val text = it["text"]!!
                 box?.addView(
                         (View.inflate(parent.context, linkViewId, null) as ViewGroup).also {
-                            (it.findViewById(linkTextId) as? TextView)?.also {
+                            (it.findViewById<TextView?>(linkTextId))?.also {
                                 it.text = text
                                 texts.add(it)
 
