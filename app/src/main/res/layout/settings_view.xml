@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent"
+    >
+    <!--<ImageButton
+        android:id="@+id/settings_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.5"
+        android:visibility="visible"
+        android:layout_gravity="end"
+        app:srcCompat="@android:drawable/ic_menu_preferences" />
+-->
+    <LinearLayout
+        android:id="@+id/settings_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="end"
+        android:padding="@dimen/text_margin"
+        android:background="@color/colorPrimaryDark"
+        android:visibility="gone">
+
+    <Switch
+        android:id="@+id/mute_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/touch_height"
+        android:text="@string/sound_label"
+       />
+
+    <Switch
+        android:id="@+id/feedback_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/touch_height"
+        android:text="@string/feedback_label"
+        />
+    </LinearLayout>
+</FrameLayout>

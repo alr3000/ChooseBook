@@ -17,7 +17,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import java.io.File
 
-class TabbedLibraryActivity : AppCompatActivity(), View.OnClickListener{
+class TabbedLibraryActivity : AppCompatActivity() {
     val TAG = "TabbedLibraryActivity"
 
    //tab 1
@@ -27,6 +27,8 @@ class TabbedLibraryActivity : AppCompatActivity(), View.OnClickListener{
     //tab 2
     var onlineTab: TextView? = null
     val ONLINE_TAG = R.string.online_library_tab
+
+    val settings = SettingsFragment()
 
 
     //todo: remember tab selected
@@ -38,24 +40,43 @@ class TabbedLibraryActivity : AppCompatActivity(), View.OnClickListener{
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        //todo: check WIFI
+        val canGetOnlineBooks = false
+
         // navigation to online/offline library lists -- set listener and first selected
-        offlineTab = (findViewById<TextView?>(R.id.tab1))?.also {
-            it.tag = OFFLINE_TAG
-            it.setOnClickListener(this)
+        offlineTab = (findViewById<TextView?>(R.id.tab1))?.apply {
+           // it.tag = OFFLINE_TAG
+            setOnClickListener{
+                v ->
+                listOf(offlineTab, onlineTab).onEach { it?.isSelected = if (v == it) true else false }
+                gotoFragment(OfflineBookListFragment())
+            }
+
         }
-        onlineTab = (findViewById<TextView?>(R.id.tab2))?.also {
-            it.tag = ONLINE_TAG
-            it.setOnClickListener(this)
+
+        onlineTab = (findViewById<TextView?>(R.id.tab2))?.apply {
+            if (!canGetOnlineBooks) {
+                visibility = View.GONE
+            } else {
+                //tag = ONLINE_TAG
+                setOnClickListener{
+                    v ->
+                    listOf(offlineTab, onlineTab).onEach { it?.isSelected = if (v == it) true else false }
+                    gotoFragment(OnlineBookListFragment())
+                }
+            }
         }
 
         offlineTab?.performClick()
     }
 
 
+
     // todo: help, settings, and share
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_tabbed_library_actvity, menu)
+//        menu.add(0, R.id.action_settings, 0, R.string.action_settings)
         return true
     }
 
@@ -63,17 +84,31 @@ class TabbedLibraryActivity : AppCompatActivity(), View.OnClickListener{
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
+        try {
+            Log.d(TAG, "onOptionsItemSelected")
+            val id = item.itemId
 
-
-        if (id == R.id.action_settings) {
-            return true
+            if (id == R.id.action_settings) {
+                fragmentManager.beginTransaction()
+                        .addToBackStack(TAG)
+                        .add(R.id.page_fragment_container, settings, settings.TAG)
+                        .commit()
+                return true
+            }
         }
-
+        catch (e: Exception) {
+            Log.e(TAG, "failed on select settings", e)
+        }
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onClick(v: View?) {
+    fun gotoFragment(newFrag: Fragment) {
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.page_fragment_container, newFrag)
+                .commit()
+    }
+
+    /*override fun onClick(v: View?) {
         Log.d(TAG, "onTabSelected: " + v?.tag)
         listOf(offlineTab, onlineTab).onEach { it?.isSelected = if (v == it) true else false }
         val fm = when(v?.tag) {
@@ -86,8 +121,9 @@ class TabbedLibraryActivity : AppCompatActivity(), View.OnClickListener{
             }
             else -> PlaceholderFragment.newInstance(0)
         }
-        supportFragmentManager.beginTransaction().replace(R.id.page_fragment_container, fm).commit()
-    }
+        //supportFragmentManager.beginTransaction().replace(R.id.page_fragment_container, fm).commit()
+        supportFragmentManager.beginTransaction().add(R.id.page_fragment_container, fm).commit()
+    }*/
 
 
     /**

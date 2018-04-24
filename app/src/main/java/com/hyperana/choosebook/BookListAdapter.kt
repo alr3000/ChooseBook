@@ -15,6 +15,7 @@ import android.widget.ListAdapter
 import android.widget.TextView
 import com.android.volley.toolbox.ImageLoader
 import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import java.io.File
 import java.io.FilenameFilter
 
@@ -61,14 +62,19 @@ class BookListAdapter(val activity: Activity) : BaseAdapter() {
                         (findViewById<TextView?>(R.id.author))?.text = book.author
 
                         //set cover image
-                        Log.d(TAG, "book.thumb: " + book.thumb)
+                        Log.d(TAG, "glide load book.thumb: " + book.thumb)
                         (findViewById<ImageView?>(R.id.cover))?.also {
-                            it.setImageResource(R.drawable.no_image)
-                            (activity.application as App).loadImageBitmap(book.thumb, object: App.BitmapListener {
+                            //it.setImageResource(R.drawable.no_image)
+                            Glide
+                                    .with(activity)
+                                    .load(book.thumb)
+                                    .into(it)
+                           /* (activity.application as App).loadImageBitmap(book.thumb, object: App.BitmapListener {
                                 override fun onBitmap(bitmap: Bitmap?) {
                                     activity.runOnUiThread { it.setImageBitmap(bitmap) }
                                 }
-                            })
+                            })*/
+                            Log.d(TAG, "glide return from load")
                         }
                     }
                     catch(e: Exception) {

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 
 /**
  * Created by alr on 2/8/18.
@@ -58,11 +59,11 @@ class PageItemImage(val uri: Uri) : PageItem() {
         return convertView ?: View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
             (findViewById<ImageView?>(imageId))?.also {
-                (parent.context.applicationContext as? App)?.loadImageBitmap(uri, object: App.BitmapListener {
-                    override fun onBitmap(bitmap: Bitmap?) {
-                        (it.context as? Activity)?.runOnUiThread { it.setImageBitmap(bitmap) }
-                    }
-                })
+                Glide
+                        .with(parent.context)
+                        .load(uri)
+                        .into(it)
+
                 it.setOnClickListener {
                     pageItemListener?.onImageClick(it as ImageView)
                 }

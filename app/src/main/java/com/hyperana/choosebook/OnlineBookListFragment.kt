@@ -23,6 +23,8 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
@@ -91,7 +93,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
         bookListView = (view.findViewById<ListView>(R.id.booklist)).also {
             it.adapter = listAdapter
             it.onItemClickListener = this  //start book activity
-            it.onItemLongClickListener = this //remove book from device
+            it.onItemLongClickListener = this //add book to device
 
         }
     }
@@ -178,6 +180,8 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
 
         // load titles page and initiate load of each book json into memory
         queue!!.add(createTitlesRequest())
+
+
 
     }
 

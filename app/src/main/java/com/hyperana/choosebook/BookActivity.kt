@@ -2,6 +2,8 @@ package com.hyperana.choosebook
 
 import android.animation.*
 import android.annotation.TargetApi
+import android.app.Dialog
+import android.content.Context
 import android.graphics.Matrix
 import android.graphics.Point
 import android.support.v4.app.LoaderManager
@@ -21,9 +23,12 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Build
 import android.os.Handler
+import android.preference.DialogPreference
+import android.support.v7.app.AlertDialog
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
+import android.widget.ImageButton
 
 
 val EXTRA_URI_STRING = "uriString"
@@ -37,6 +42,16 @@ class BookActivity :
     val TAG = "BookActivity"
     var loaderId = 0
     var book: Book? = null
+
+    val settings = SettingsFragment()
+    var isSoundOn: Boolean = false
+    get() {
+        return getPreferences(Context.MODE_PRIVATE).getBoolean(SETTING_SOUND_STRING, false)
+    }
+    var isEffectsOn: Boolean = false
+    get() {
+        return getPreferences(Context.MODE_PRIVATE).getBoolean(SETTING_EFFECTS_STRING, false)
+    }
 
 
     //**************************** TTS Utterance Implementation ***********************
@@ -62,7 +77,9 @@ class BookActivity :
 
         fun highlight(v: View, isActive: Boolean = true) {
             runOnUiThread {
-                v.isActivated = isActive
+                if (isEffectsOn) {
+                    v.isActivated = isActive
+                }
             }
         }
 
@@ -100,6 +117,10 @@ class BookActivity :
             text: String? = "",
             mode: Int = QUEUE_FLUSH,
             options: Bundle? = null) : String? {
+        if (!isSoundOn) {
+            Log.d(TAG, "speak: MUTED")
+            return null
+        }
 
         TTS?.apply {
             if (Build.VERSION.SDK_INT <= 15) {
@@ -121,13 +142,13 @@ class BookActivity :
     //todo: -L- add highlight view
     //todo: speakTextView should return a listener object for that utterance/view
     fun speakTextView(v: View, interrupt: Boolean = true) {
-        val textView = (v as? TextView) ?: v.findViewById<TextView?>(R.id.pageitem_text)
-        textView?.also {
-        val utteranceId = speak(it.text?.toString(), if (interrupt) QUEUE_FLUSH else QUEUE_ADD)
-            if (utteranceId != null) {
-                utteranceMap.put(utteranceId, v)
+            val textView = (v as? TextView) ?: v.findViewById<TextView?>(R.id.pageitem_text)
+            textView?.also {
+                val utteranceId = speak(it.text?.toString(), if (interrupt) QUEUE_FLUSH else QUEUE_ADD)
+                if (utteranceId != null) {
+                    utteranceMap.put(utteranceId, v)
+                }
             }
-        }
     }
 
 
@@ -149,6 +170,20 @@ class BookActivity :
                 )
             }
 
+            findViewById<ImageButton>(R.id.settings_button)!!.apply {
+                setOnClickListener {
+                    v: View ->
+                    try {
+                        Log.d(TAG, "settings - onClick")
+                        openSettings()
+                    }
+                    catch (e: Exception) {
+                        Log.e(TAG, "failed click settings")
+                    }
+                }
+            }
+
+
             //start up TTS:
             interruptSpeak()
 
@@ -157,6 +192,7 @@ class BookActivity :
             Log.e(TAG, "problem onCreate", e)
         }
     }
+
 
 
 
@@ -207,6 +243,17 @@ class BookActivity :
             }
     }
 
+    fun openSettings() {
+        Log.d(TAG, "openSettings")
+        if (!settings.isAdded) {
+            fragmentManager.beginTransaction()
+                    .addToBackStack(TAG)
+                    .add(R.id.content_frame, settings, settings.TAG)
+                    .commit()
+        }
+
+    }
+
 
     //************************ PageItemListener Implementation **********************
     override fun onLinkClick(v: View, toName: String) {
@@ -244,17 +291,20 @@ class BookActivity :
     override fun onImageClick(v: ImageView) {
         Log.d(TAG, "onImageClick")
         try {
+            // rect to hold view on-screen dimensions
+            val viewRect = Rect()
+
+            // create new imageview clone
             val highlight = ImageView(this).apply {
                 setImageDrawable(v.drawable)
+                
+                // view discarded on touch
                 setOnClickListener { v -> (parent as ViewGroup).removeView(this) }
 
                 // todo: -L- on touch drags zoomed image
             }
-
-            val orig = highlight.drawable.bounds
-            val viewRect = Rect()
-
-
+         
+            // add highlight view to layout
             (findViewById<ViewGroup>(R.id.content_frame) as ViewGroup).apply {
                 addView(
                         highlight,
@@ -263,19 +313,22 @@ class BookActivity :
                 )
                 getLocalVisibleRect(viewRect)
             }
+            
+            // full size of image
+            val imageRect = highlight.drawable.bounds
 
             highlight.scaleType = ImageView.ScaleType.MATRIX
 
             val SCALE = 3f
             // zoomed to center
-            val scaledRect = Rect(orig).apply {inset((orig.width()/SCALE).toInt(), (orig.height()/SCALE).toInt())}
+            val scaledRect = Rect(imageRect).apply {inset((imageRect.width()/SCALE).toInt(), (imageRect.height()/SCALE).toInt())}
 
             val top = 0
             val left = 0
-            val centerHoriz = orig.width() - scaledRect.width()*2
-            val centerVert = orig.height() - scaledRect.height()*2
-            val bottom = orig.height() - scaledRect.height()
-            val right = orig.width() - scaledRect.width()
+            val centerHoriz = imageRect.width() - scaledRect.width()*2
+            val centerVert = imageRect.height() - scaledRect.height()*2
+            val bottom = imageRect.height() - scaledRect.height()
+            val right = imageRect.width() - scaledRect.width()
 
             // figure eight
             val offsetScript = listOf(
@@ -325,7 +378,7 @@ class BookActivity :
                 }
             }
 
-            Log.d(TAG, "onImageClick: " + orig.toString() + " in " + viewRect.toString())
+            Log.d(TAG, "onImageClick: " + imageRect.toString() + " in " + viewRect.toString())
             val panScript = AnimatorSet().apply {
                 duration = 2000
                 interpolator = LinearInterpolator()

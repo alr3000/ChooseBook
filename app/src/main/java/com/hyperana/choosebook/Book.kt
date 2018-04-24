@@ -168,9 +168,13 @@ fun BookFromAsset(assets: AssetManager, bookPath: String) : Book? {
         return Book(
                 jsonString = loadString(assets.open(File(bookPath, json).path)),
                 path = bookPath,
-                uri = Uri.fromParts(ContentResolver.SCHEME_CONTENT, "", "")
+               uri = Uri.parse("file:///android_asset/") // for Glide (Volley?)
+                        .buildUpon()
+                        .appendPath(bookPath)
+                        .build()
+               /* uri = AssetContentProvider.CONTENT_URI
                         .buildUpon().appendPath(bookPath).build()
-                        .also { Log.d("BookFromAsset", it.toString())}
+                        .also { Log.d("BookFromAsset", it.toString())}*/
         )
     }
     catch (e: Exception) {
