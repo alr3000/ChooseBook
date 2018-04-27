@@ -12,20 +12,20 @@
         android:layout_height="match_parent">
 
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="ifContentScrolls">
 
 
             <FrameLayout
                 android:id="@+id/page_fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-               <!-- keep empty because replace does not replace items defined in xml -->
+                <!-- keep empty because replace does not replace items defined in xml -->
             </FrameLayout>
 
-    </ScrollView>
+        </ScrollView>
     </FrameLayout>
 
     <ImageButton

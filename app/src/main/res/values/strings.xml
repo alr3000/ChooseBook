@@ -35,6 +35,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_scrolling_book">ScrollingBookActivity</string>
+    <string name="zoomed_image_description">zoomed image</string>
 
     <string name="action_settings">Settings</string>
 

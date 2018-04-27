@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 
 /**
  * Created by alr on 2/8/18.
@@ -64,9 +66,9 @@ class PageItemImage(val uri: Uri) : PageItem() {
                         .load(uri)
                         .into(it)
 
-                it.setOnClickListener {
+                /*it.setOnClickListener {
                     pageItemListener?.onImageClick(it as ImageView)
-                }
+                }*/
             }
         }
     }

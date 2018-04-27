@@ -132,7 +132,12 @@ class PageFragment : Fragment() {
         if (mPage != null) {
             container.removeAllViews()
             mPage!!.onEach {
-                it.getView(container, null, mPageItemListener)
+                try {
+                    it.getView(container, null, mPageItemListener)
+                }
+                catch(e:Exception) {
+                    Log.e(TAG, "failed pageitem get view", e)
+                }
             }
         }
     }
