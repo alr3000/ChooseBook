@@ -17,7 +17,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
     val CLICK_TIME_ALLOWANCE = 100 // no android standard? long-click is 500ms
     //val CLICK_MOTION_ALLOWANCE = 40
 
-    var zoomScale = 4f // todo: use xml attributes system
+    var zoomScale = 4f // todo: -L- use xml attributes system
 
     var oScaleType: ScaleType?  = null // retain scaleType for use on unzoom
     var oImageMatrix = Matrix()
@@ -220,7 +220,6 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
         boundRectInZoomedImage(clipRect)
         Log.d(TAG, "moved clipRect: " + clipRect.toString())
 
-        // todo: translate by difference
         // adjust image matrix: must reassign to make image redraw
         imageMatrix = mMatrix.apply {
             postTranslate(

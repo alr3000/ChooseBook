@@ -31,7 +31,7 @@ class TabbedLibraryActivity : AppCompatActivity() {
     val settings = SettingsFragment()
 
 
-    //todo: remember tab selected
+    //todo: -L- remember tab selected
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "oncreate")
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class TabbedLibraryActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        //todo: check WIFI
+        //todo: -L- check WIFI
         val canGetOnlineBooks = false
 
         // navigation to online/offline library lists -- set listener and first selected
@@ -72,7 +72,7 @@ class TabbedLibraryActivity : AppCompatActivity() {
 
 
 
-    // todo: help, settings, and share
+    // todo: -L- help and share
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_tabbed_library_actvity, menu)

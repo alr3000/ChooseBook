@@ -194,7 +194,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
                 ?: listOf()
     }
 
-    //todo: update the downloads
+    //todo: -L- update the downloads
     fun updateDownloadsList() {
         //listFiles is null if empty
         downloadBookList =  File(filesPath).listFiles()
@@ -258,12 +258,12 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
      * (http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
+
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
         private val FILE_DIR = "bookDirectory"
         private val ASSET_DIR = "assetDirectory"

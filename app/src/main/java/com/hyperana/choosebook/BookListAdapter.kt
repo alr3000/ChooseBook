@@ -24,7 +24,7 @@ import java.io.FilenameFilter
  * Creates from directory listing if path provided for observer, otherwise, set list of books
  * listPath must be absolute -- doesn't use getFilesDir, etc
  * start and stop observer on pause and resume
- * todo: make helpers to keep list from being reset (use mutable)
+ * todo: -?- make helpers to keep list from being reset (use mutable)
  */
 fun randomString( length: Int = 8) : String {
     val char = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()

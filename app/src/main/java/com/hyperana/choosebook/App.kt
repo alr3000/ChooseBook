@@ -52,7 +52,6 @@ class App : Application() {
     val MAX_IMAGE_HEIGHT = 2000
 
 
-    //todo: use disk cache -- add images to both, check memory cache, then disk cache
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate")
@@ -61,12 +60,6 @@ class App : Application() {
         val availableDisk = cacheDir.freeSpace // bytes
         Log.d(TAG, "available space in memory ("+availableMemory+") disk ("+availableDisk+")")
 
-      /*  // create cache (defined in kB)
-        imageCache = object: LruCache<String, Bitmap>((availableMemory/(4 * 1024)).toInt()) {
-            override fun sizeOf(key: String, value: Bitmap) : Int {
-                return value.getByteCount();
-            }
-        }*/
     }
 
     override fun onLowMemory() {

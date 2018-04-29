@@ -21,29 +21,19 @@ import android.view.ViewGroup
 class PageFragment : Fragment() {
     private val TAG = "PageFragment"
 
-    // TODO: Rename and change types of parameters
+    // TODO: -L- formalize interaction with activity through fragmentinteractionlistener (Uri)
     private var mPage: List<PageItem>? = null
-    private var mParam1: String? = null
-    private var mParam2: String? = null
 
     private var mPageItemListener: PageItemListener? = null
-    private var mListener: OnFragmentInteractionListener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = arguments!!.getString(ARG_PARAM1)
-            mParam2 = arguments!!.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         try {
             Log.d(TAG, "onCreateView")
+
             // Inflate the layout for this fragment
             return inflater.inflate(R.layout.fragment_page, container, false)
+
         } catch (e: Exception) {
             Log.e(TAG, "problem creating view", e)
             return View(activity)
@@ -53,34 +43,24 @@ class PageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         try {
+
             Log.d(TAG, "onViewCreated")
             setPageView((view.findViewById<ViewGroup>(R.id.page_container)))
+
         }catch (e: Exception) {
             Log.e(TAG, "problem setting page view", e)
         }
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
-    }
-
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         Log.d(TAG, "onAttach")
-        if (context is OnFragmentInteractionListener) {
-            mListener = context as OnFragmentInteractionListener?
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-        }
     }
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
+  //      mPageItemListener = null
     }
 
     /**
@@ -93,13 +73,11 @@ class PageFragment : Fragment() {
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
 
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
         private val ARG_PARAM1 = "param1"
         private val ARG_PARAM2 = "param2"
@@ -114,7 +92,6 @@ class PageFragment : Fragment() {
          * *
          * @return A new instance of fragment PageFragment.
          */
-        // TODO: Rename and change types and number of parameters
         fun newInstance(page: List<PageItem>, pageItemListener: PageItemListener): Fragment {
             Log.d("PageFragment", "newInstance with " + page.count() + " items")
             val fragment = PageFragment()
@@ -129,8 +106,13 @@ class PageFragment : Fragment() {
 
     fun setPageView(container: ViewGroup) {
         Log.d(TAG, "setPageView with " + mPage?.count() + " items")
+
         if (mPage != null) {
+
+            // remove default view if any
             container.removeAllViews()
+
+            // add pageitems
             mPage!!.onEach {
                 try {
                     it.getView(container, null, mPageItemListener)
@@ -139,8 +121,12 @@ class PageFragment : Fragment() {
                     Log.e(TAG, "failed pageitem get view", e)
                 }
             }
+
         }
+
     }
+
+
 
     override fun onDestroy() {
         super.onDestroy()

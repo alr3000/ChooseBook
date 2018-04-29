@@ -242,7 +242,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
 
 
     // save book temporarily into cacheDir/bookpath before opening for "online" viewing
-    // todo: check if the book is already downloaded and use that one instead
+    // todo: -L- check if the book is already downloaded and use that one instead
     fun openBook(book: Book) {
         val tempDir = (activity!!.application as App).tempBookDir
         tempDir!!.deleteRecursively()
@@ -334,12 +334,10 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
      * (http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+       fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
         private val FILE_DIR = "bookDirectory"
         private val ASSET_DIR = "assetDirectory"

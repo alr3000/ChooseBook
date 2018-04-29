@@ -45,8 +45,8 @@ class ZoomImageView : ImageView, View.OnClickListener {
     var oScaleType: ScaleType = ScaleType.FIT_CENTER // in case the overlay xml layout differs
 
 
-    // todo: make companion object for these and drawable
-    //todo: incorporate attributes from xml
+    // todo: -L- make companion object for these and drawable
+    //todo: -L- incorporate attributes from xml
     val zoomFactor = 4f
     val targetInsetX = 48
     val targetInsetY = 48
@@ -133,14 +133,6 @@ class ZoomImageView : ImageView, View.OnClickListener {
         zoomOverlay?.visibility = if (v == this) View.VISIBLE else View.GONE
 
     }
-
-
-
-    //todo: zoomed image does not fill overlay/screen
-    //todo: seems offset from contact point
-    //todo: exceeds bounds when panning
-    //todo: on first MOVE, center jumps
-
 
 
     // remove offset from overlay

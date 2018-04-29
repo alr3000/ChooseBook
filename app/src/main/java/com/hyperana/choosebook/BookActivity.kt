@@ -139,7 +139,7 @@ class BookActivity :
         speak("", QUEUE_FLUSH)
     }
 
-    //todo: -L- add highlight view
+    //todo: -L- add highlight view a la zoom image view
     //todo: speakTextView should return a listener object for that utterance/view
     fun speakTextView(v: View, interrupt: Boolean = true) {
             val textView = (v as? TextView) ?: v.findViewById<TextView?>(R.id.pageitem_text)
@@ -239,6 +239,7 @@ class BookActivity :
                                 PageFragment.newInstance(contents, this),
                                 name
                         )
+
                         .commitAllowingStateLoss() //Should check if activity is still on top?
             }
     }

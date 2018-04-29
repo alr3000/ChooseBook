@@ -142,7 +142,7 @@ fun parseJsonArray(jArray: JSONArray) : List<Any?> {
 
 
 
-/*//todo: use contentprovider to abstract from assets
+/*//todo: -?- use contentprovider to abstract from assets
 // create a book from an assets "folder": on creation parses only for stub (title, cover, etc, not pages)
 fun Book(assets: AssetManager, assetPath: String = "") : Book? {
  try {
