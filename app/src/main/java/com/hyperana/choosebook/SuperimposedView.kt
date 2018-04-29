@@ -12,11 +12,13 @@ import android.widget.FrameLayout
 /**
  * Created by alr on 9/17/17.
  *
- * View duplicates original view, then animates to final size and position:
+ * View creates a frame that when placed in rootview (full screen), is positioned directly over the originalView,
+ * then animates to final size and position:
  *      zoomed by given highlightZoom percentage,
  *      offset to show above or below original view, within the bounds of the screen.
  *
- * Translation is set relative to root view, so that is where highlightView should be attached.
+ * Translation is set relative to root view, so that is where superimposedView should be attached.
+ * Calculations are done on attachment
  *
  *
  */
@@ -36,7 +38,7 @@ class SuperimposedView : FrameLayout {
 
     // options
     var borderColor = Color.parseColor("#000000aa")
-    var borderWidth = 0f
+    var borderWidth = 10f
     var zoomPercent = 100
     var placement ="in place" // "center", "above"
     var zoomDuration = 100L
@@ -60,7 +62,9 @@ class SuperimposedView : FrameLayout {
 
     init {
 
+        // create "border" for whatever content may be added
         setBackgroundColor(borderColor)
+        setPadding(borderWidth.toInt(), borderWidth.toInt(), borderWidth.toInt(), borderWidth.toInt())
 
         // delay rest of initialization until parent is known
         addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
@@ -118,7 +122,7 @@ class SuperimposedView : FrameLayout {
 
         doAnimation()
 
-        //Log.d(TAG, "origRect (start): " + origRect.toString())
+        Log.d(TAG, "origRect (start): " + origRect.toString())
 
     }
 
