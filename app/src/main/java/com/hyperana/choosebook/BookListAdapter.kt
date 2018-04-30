@@ -38,7 +38,7 @@ class BookListAdapter(val activity: Activity) : BaseAdapter() {
 
     var list: List<Book> = listOf()
     set(value) {
-        Log.d(TAG, "set list: " + value.count() + " items")
+//        Log.d(TAG, "set list: " + value.count() + " items")
         field = value
         notifyDataSetChanged()
     }
@@ -48,7 +48,7 @@ class BookListAdapter(val activity: Activity) : BaseAdapter() {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        Log.d(TAG, "getView: " + position)
+//        Log.d(TAG, "getView: " + position)
         val book = getItem(position) as Book
         return (convertView ?:
                 activity.layoutInflater.inflate(
@@ -62,7 +62,7 @@ class BookListAdapter(val activity: Activity) : BaseAdapter() {
                         (findViewById<TextView?>(R.id.author))?.text = book.author
 
                         //set cover image
-                        Log.d(TAG, "glide load book.thumb: " + book.thumb)
+//                        Log.d(TAG, "glide load book.thumb: " + book.thumb)
                         (findViewById<ImageView?>(R.id.cover))?.also {
                             //it.setImageResource(R.drawable.no_image)
                             Glide
@@ -74,11 +74,11 @@ class BookListAdapter(val activity: Activity) : BaseAdapter() {
                                     activity.runOnUiThread { it.setImageBitmap(bitmap) }
                                 }
                             })*/
-                            Log.d(TAG, "glide return from load")
+//                            Log.d(TAG, "glide return from load")
                         }
                     }
                     catch(e: Exception) {
-                        Log.w(TAG, "problem filling view", e)
+//                        Log.w(TAG, "problem filling view", e)
                     }
 
                 }

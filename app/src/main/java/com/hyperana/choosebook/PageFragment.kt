@@ -29,13 +29,13 @@ class PageFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         try {
-            Log.d(TAG, "onCreateView")
+//            Log.d(TAG, "onCreateView")
 
             // Inflate the layout for this fragment
             return inflater.inflate(R.layout.fragment_page, container, false)
 
         } catch (e: Exception) {
-            Log.e(TAG, "problem creating view", e)
+//            Log.e(TAG, "problem creating view", e)
             return View(activity)
         }
     }
@@ -44,18 +44,18 @@ class PageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         try {
 
-            Log.d(TAG, "onViewCreated")
+//            Log.d(TAG, "onViewCreated")
             setPageView((view.findViewById<ViewGroup>(R.id.page_container)))
 
         }catch (e: Exception) {
-            Log.e(TAG, "problem setting page view", e)
+//            Log.e(TAG, "problem setting page view", e)
         }
 
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        Log.d(TAG, "onAttach")
+//        Log.d(TAG, "onAttach")
     }
 
     override fun onDetach() {
@@ -93,7 +93,7 @@ class PageFragment : Fragment() {
          * @return A new instance of fragment PageFragment.
          */
         fun newInstance(page: List<PageItem>, pageItemListener: PageItemListener): Fragment {
-            Log.d("PageFragment", "newInstance with " + page.count() + " items")
+//            Log.d("PageFragment", "newInstance with " + page.count() + " items")
             val fragment = PageFragment()
             fragment.mPage = page
             fragment.mPageItemListener = pageItemListener
@@ -105,7 +105,7 @@ class PageFragment : Fragment() {
     }
 
     fun setPageView(container: ViewGroup) {
-        Log.d(TAG, "setPageView with " + mPage?.count() + " items")
+//        Log.d(TAG, "setPageView with " + mPage?.count() + " items")
 
         if (mPage != null) {
 
@@ -118,7 +118,7 @@ class PageFragment : Fragment() {
                     it.getView(container, null, mPageItemListener)
                 }
                 catch(e:Exception) {
-                    Log.e(TAG, "failed pageitem get view", e)
+//                    Log.e(TAG, "failed pageitem get view", e)
                 }
             }
 

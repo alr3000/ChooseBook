@@ -120,12 +120,12 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
         try {
             // get appropriate pointer info
             val info = MyTouchEventInfo(event!!, currentTouchId)
-            Log.d(TAG, "myTouch(" + event.action.toString() + ": " + info.toString())
+//            Log.d(TAG, "myTouch(" + event.action.toString() + ": " + info.toString())
 
             when (event.action) {
 
                 MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
-                    Log.d(TAG, "fitRectF: " + fitRectF.toString())
+//                    Log.d(TAG, "fitRectF: " + fitRectF.toString())
 
                     if (fitRectF.contains(info.coords.x, info.coords.y)) {
 
@@ -153,7 +153,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
                                 (event.eventTime - event.downTime < CLICK_TIME_ALLOWANCE)
                         //        && (integrateHistory(event, info.id) < CLICK_MOTION_ALLOWANCE)
                         ) {
-                            Log.d(TAG, "touch-click")
+//                            Log.d(TAG, "touch-click")
                             performClick()
                         }
                         return true
@@ -165,17 +165,17 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
             }
         }
         catch (e: Exception) {
-            Log.e(TAG, "failed touch event: " + event?.toString(), e)
+//            Log.e(TAG, "failed touch event: " + event?.toString(), e)
         }
         return false
     }
 
     fun zoomToViewCoords(x: Float, y: Float) {
-        Log.d(TAG, "zoomToViewCoords: " + x + "," + y)
+//        Log.d(TAG, "zoomToViewCoords: " + x + "," + y)
 
         // retain pre-zoom fitRect for MOVE bounding and to trigger calculation
         oFitRectF.set(fitRectF)
-        Log.d(TAG, "fitRectF: " + oFitRectF.toString())
+//        Log.d(TAG, "fitRectF: " + oFitRectF.toString())
 
         // get composite scale conversion from fitRect to scaled intrinsic
         mScaleX = drawable.intrinsicWidth/oFitRectF.width() * zoomScale
@@ -184,12 +184,12 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
         // get zoomed-image coords from view coords
         val zoomedClipX = (x - oFitRectF.left) * mScaleX
         val zoomedClipY = (y - oFitRectF.top) * mScaleY
-        Log.d(TAG, "zoomedClip center coords: " + zoomedClipX + "," + zoomedClipY)
+//        Log.d(TAG, "zoomedClip center coords: " + zoomedClipX + "," + zoomedClipY)
 
         // view dimensions
         val viewRect = Rect()
         getLocalVisibleRect(viewRect)
-        Log.d(TAG, "viewRect: " + viewRect.toString())
+//        Log.d(TAG, "viewRect: " + viewRect.toString())
 
 
         // set rectangle of viewed portion of the image
@@ -208,7 +208,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
             boundRectInZoomedImage(this)
 
         }
-        Log.d(TAG, "clipRect: " + clipRect.toString())
+//        Log.d(TAG, "clipRect: " + clipRect.toString())
 
         // retain screen touch coords for MOVE calculations
         currentCoords = PointF(x, y)
@@ -227,11 +227,11 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
             postTranslate(-clipRect.left, -clipRect.top)
         }
 
-        Log.d(TAG, "fitRectF (zoomed): " + fitRectF.toString())
+//        Log.d(TAG, "fitRectF (zoomed): " + fitRectF.toString())
     }
 
     fun cancelZoom() {
-        Log.d(TAG, "cancelZoom")
+//        Log.d(TAG, "cancelZoom")
 
         currentTouchId = null
 
@@ -249,7 +249,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
         // screen movement, scaled to zoomed image
         val dx = (bx - currentCoords.x) * mScaleX
         val dy = (by - currentCoords.y) * mScaleY
-        Log.d(TAG, "changePosition by: " +dx + "," + dy)
+//        Log.d(TAG, "changePosition by: " +dx + "," + dy)
 
         // current clip position
         val cLeft = clipRect.left
@@ -259,7 +259,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
         // and check bounds
         clipRect.offset(dx, dy)
         boundRectInZoomedImage(clipRect)
-        Log.d(TAG, "moved clipRect: " + clipRect.toString())
+//        Log.d(TAG, "moved clipRect: " + clipRect.toString())
 
         // adjust image matrix: must reassign to make image redraw
         imageMatrix = mMatrix.apply {
@@ -279,7 +279,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
         // zoomed image dimensions
         val zoomWidth = drawable.intrinsicWidth * zoomScale
         val zoomHeight = drawable.intrinsicHeight * zoomScale
-        Log.d(TAG, "zoomed image: " + zoomWidth + "," + zoomHeight)
+//        Log.d(TAG, "zoomed image: " + zoomWidth + "," + zoomHeight)
 
 
         rect.apply {

@@ -60,7 +60,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            Log.d(TAG, "onCreate")
+//            Log.d(TAG, "onCreate")
 
             // set paths to watch
             filesPath = (activity!!.application as App).savedBookDir!!.path
@@ -71,7 +71,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
                     val TAG = "BookDirObserver"
 
                     override fun startWatching() {
-                        Log.d(TAG, "startWatching " + filesPath)
+//                        Log.d(TAG, "startWatching " + filesPath)
                         super.startWatching()
                         activity!!.runOnUiThread {
                             updateDownloadsList()
@@ -79,7 +79,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
                     }
 
                     override fun stopWatching() {
-                        Log.d(TAG, "StopWatching " + filesPath)
+//                        Log.d(TAG, "StopWatching " + filesPath)
                         super.stopWatching()
                     }
 
@@ -87,7 +87,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
                         when (event and FileObserver.ALL_EVENTS) {
                             FileObserver.CREATE,
                             FileObserver.DELETE -> {
-                                Log.d(TAG, "event: " + event + " - " + path)
+//                                Log.d(TAG, "event: " + event + " - " + path)
                                 if (path != null) {
                                     activity!!.runOnUiThread {
                                         updateDownloadsList()
@@ -95,7 +95,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
                                 }
                             }
                             else -> {
-                                Log.d(TAG, "non-event: " + event + " - " + path)
+//                                Log.d(TAG, "non-event: " + event + " - " + path)
                             }
                         }
                     }
@@ -108,7 +108,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
             fileObserver?.startWatching()
         }
         catch (e: Exception) {
-            Log.e(TAG, "problem creating fragment", e)
+//            Log.e(TAG, "problem creating fragment", e)
         }
     }
 
@@ -120,14 +120,14 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
             return inflater.inflate(R.layout.content_scrolling_library, container, false)
         }
         catch (e: Exception) {
-            Log.e(TAG, "problem creating view", e)
+//            Log.e(TAG, "problem creating view", e)
             return View(activity)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated")
+//        Log.d(TAG, "onViewCreated")
         (view.findViewById<ListView>(R.id.booklist)).also {
             it.adapter = offlineListAdapter
             it.onItemClickListener = this  //start book activity
@@ -139,13 +139,13 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
     // given context, populate asset list and start observer for downloaded books
     override fun onAttach(context: Context?) {
         try {
-            Log.d(TAG, "onAttach")
+//            Log.d(TAG, "onAttach")
             super.onAttach(context)
 
 
     }
         catch (e: Exception) {
-            Log.e(TAG, "problem on attaching offline list fragment", e)
+//            Log.e(TAG, "problem on attaching offline list fragment", e)
         }
     }
 
@@ -157,7 +157,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
     // long click prompts for remove (not applicable to assets)
     override fun onItemLongClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long): Boolean {
         try {
-            Log.d(TAG, "onItemLongClick: " + position)
+//            Log.d(TAG, "onItemLongClick: " + position)
             val book = (parent?.adapter?.getItem(position) as Book)
             if (downloadBookList.contains(book)) {
                 promptRemoveBook(book)
@@ -165,7 +165,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
             }
         }
         catch (e: Exception) {
-            Log.e(TAG, "problem delete book", e)
+//            Log.e(TAG, "problem delete book", e)
         }
         return false
     }
@@ -173,14 +173,14 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
     // click downloads if necessary, starts book activity
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         try {
-            Log.d(TAG, "onItemClick: " + position)
+//            Log.d(TAG, "onItemClick: " + position)
             (parent?.adapter?.getItem(position) as Book)
                     .also {
                         startBookActivity(it!!)
                     }
         }
         catch(e: Exception) {
-            Log.e(TAG, "problem starting book activity", e)
+//            Log.e(TAG, "problem starting book activity", e)
         }
     }
 
@@ -231,7 +231,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
 
     //removeDownloadedBook(bookpath)
     fun deleteBook(bookPath: String) {
-        Log.d(TAG, "deleteBook: " + bookPath)
+//        Log.d(TAG, "deleteBook: " + bookPath)
         val dir = File(filesPath).resolve(bookPath)
         if (!dir.exists() || !dir.deleteRecursively()) {
             throw Exception("book directory not deleted at " + dir.path)
@@ -240,7 +240,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
 
     //startBookActivity(bookpath)
     fun startBookActivity(book: Book) {
-        Log.d(TAG, "start book activity: " + book.parentUri)
+//        Log.d(TAG, "start book activity: " + book.parentUri)
         val myIntent = Intent(activity, BookActivity::class.java)
         myIntent.putExtra(EXTRA_BOOKPATH, book.path)
         myIntent.data = book.parentUri

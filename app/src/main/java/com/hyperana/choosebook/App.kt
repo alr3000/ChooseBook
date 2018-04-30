@@ -2,29 +2,12 @@ package com.hyperana.choosebook
 
 import android.app.Application
 import android.content.ContentResolver
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Handler
 import android.util.Log
-import android.util.LruCache
-import android.widget.ImageView
-import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.ImageLoader
-import com.android.volley.toolbox.ImageRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import java.io.ByteArrayInputStream
 import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URI
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 /**
  * Created by alr on 1/18/18.
@@ -47,30 +30,26 @@ class App : Application() {
         get() {
             return field ?: Volley.newRequestQueue(this)
         }
-    val bitmapConfig = Bitmap.Config.ARGB_8888
-    val MAX_IMAGE_WIDTH = 1200
-    val MAX_IMAGE_HEIGHT = 2000
-
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate")
+  //      Log.d(TAG, "onCreate")
 
         val availableMemory = Runtime.getRuntime().maxMemory() // bytes
         val availableDisk = cacheDir.freeSpace // bytes
-        Log.d(TAG, "available space in memory ("+availableMemory+") disk ("+availableDisk+")")
+//        Log.d(TAG, "available space in memory ("+availableMemory+") disk ("+availableDisk+")")
 
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        Log.d(TAG, "onLowMemory")
+//        Log.d(TAG, "onLowMemory")
 
     }
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        Log.d(TAG, "onTRimMemory")
+//        Log.d(TAG, "onTRimMemory")
     }
 
     interface StringListener {
@@ -89,14 +68,14 @@ class App : Application() {
 
 
     fun loadString(uri: Uri, listener: StringListener? = null) {
-        Log.d(TAG, "loadString: " + uri.toString())
+//        Log.d(TAG, "loadString: " + uri.toString())
         try {
 
            when (uri.scheme) {
 
            // case for assets
                 ContentResolver.SCHEME_CONTENT -> {
-                    Log.d(TAG, "loadBookJson (asset): " + uri.encodedPath)
+//                    Log.d(TAG, "loadBookJson (asset): " + uri.encodedPath)
                     listener?.onString(
                             com.hyperana.choosebook.loadString(
                                     assets.open(uri.path.substring(1))
@@ -107,7 +86,7 @@ class App : Application() {
             // case for files and assets:
            // assets may have a "file:///android_asset" uri for Glide's sake
                ContentResolver.SCHEME_FILE -> {
-                   Log.d(TAG, "loadBookJson (file): " + uri.encodedPath)
+//                   Log.d(TAG, "loadBookJson (file): " + uri.encodedPath)
                    val assetPathSegment = uri.pathSegments.indexOf("android_asset")
                    if (assetPathSegment > -1) {
                        val correctedPath = uri.pathSegments
@@ -129,7 +108,7 @@ class App : Application() {
                }
             // case for http request
                 else -> {
-                    Log.d(TAG, "loadString (http): " + uri.encodedPath)
+//                    Log.d(TAG, "loadString (http): " + uri.encodedPath)
                     requestQueue!!.add(
                             StringRequest(
                                     uri.toString(),
@@ -137,11 +116,11 @@ class App : Application() {
                                         listener?.onString(string)
                                     },
                                     { volleyError ->
-                                        Log.e(
-                                                TAG,
-                                                "requestError",
-                                                Exception(volleyError?.message, volleyError?.cause)
-                                        )
+//                                        Log.e(
+//                                                TAG,
+//                                                "requestError",
+//                                                Exception(volleyError?.message, volleyError?.cause)
+//                                        )
                                         listener?.onString(null)
                                     }
                             )
@@ -150,7 +129,7 @@ class App : Application() {
             }
         }
         catch(e: Exception) {
-            Log.e(TAG, "problem loading string: " + uri.toString(), e)
+//            Log.e(TAG, "problem loading string: " + uri.toString(), e)
            listener?.onString(null)
         }
     }

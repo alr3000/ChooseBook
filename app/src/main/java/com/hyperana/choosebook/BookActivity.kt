@@ -41,7 +41,6 @@ class BookActivity :
 {
 
     val TAG = "BookActivity"
-    var loaderId = 0
     var book: Book? = null
 
     // saved state
@@ -65,7 +64,7 @@ class BookActivity :
             // use application context because tts will bind a service that may outlast the activity
             field = field ?: TextToSpeech(applicationContext, {
                 status ->
-                Log.d(TAG, "TTS status: " + status)
+//                Log.d(TAG, "TTS status: " + status)
                 if (status == ERROR) {
                     field = null
                 } else {
@@ -89,28 +88,28 @@ class BookActivity :
         }
 
         override fun onStart(utteranceId: String?) {
-            Log.d(TAG, "utterance onStart: " + utteranceId)
+//            Log.d(TAG, "utterance onStart: " + utteranceId)
             utteranceMap[utteranceId]?.also {
                 highlight(it)
-            } ?: Log.w(TAG, "no matching TextView")
+            } // ?: Log.w(TAG, "no matching TextView")
         }
 
         override fun onStop(utteranceId: String?, interrupted: Boolean) {
-            Log.d(TAG, "utterance onStop: " + utteranceId)
+//            Log.d(TAG, "utterance onStop: " + utteranceId)
             utteranceMap[utteranceId]?.also {
                 highlight(it, false)
-            } ?: Log.w(TAG, "no matching TextView")
+            } // ?: Log.w(TAG, "no matching TextView")
         }
 
         override fun onDone(utteranceId: String?) {
-            Log.d(TAG, "onDone: " + utteranceId)
+//            Log.d(TAG, "onDone: " + utteranceId)
             utteranceMap[utteranceId]?.also {
                 highlight(it, false)
-            } ?: Log.w(TAG, "no matching TextView")
+            } // ?: Log.w(TAG, "no matching TextView")
         }
 
         override fun onError(utteranceId: String?) {
-            Log.d(TAG, "onError: " + utteranceId)
+//            Log.d(TAG, "onError: " + utteranceId)
             utteranceMap[utteranceId]?.also {
                 highlight(it, false)
             }
@@ -123,7 +122,7 @@ class BookActivity :
             mode: Int = QUEUE_FLUSH,
             options: Bundle? = null) : String? {
         if (!isSoundOn) {
-            Log.d(TAG, "speak: MUTED")
+//            Log.d(TAG, "speak: MUTED")
             return null
         }
 
@@ -160,17 +159,17 @@ class BookActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            Log.d(TAG, "onCreate")
+//            Log.d(TAG, "onCreate")
             setContentView(R.layout.activity_book)
 
             currentPage = savedInstanceState?.getString(CURRENT_PAGE_KEY)
-            Log.d(TAG, "currentPage: " + currentPage)
+//            Log.d(TAG, "currentPage: " + currentPage)
 
             intent.data!!.also {
                 (application as App).loadString(it.buildUpon().appendPath(BOOK_FILENAME).build(),
                       object: App.StringListener {
                           override fun onString(string: String?) {
-                              Log.d(TAG, "loadString listener: " + string?.length)
+//                              Log.d(TAG, "loadString listener: " + string?.length)
                               book = Book( string ?: "", it.lastPathSegment, it)
                               setBook()
                           }
@@ -182,11 +181,11 @@ class BookActivity :
                 setOnClickListener {
                     v: View ->
                     try {
-                        Log.d(TAG, "settings - onClick")
+//                        Log.d(TAG, "settings - onClick")
                         openSettings()
                     }
                     catch (e: Exception) {
-                        Log.e(TAG, "failed click settings")
+//                        Log.e(TAG, "failed click settings")
                     }
                 }
             }
@@ -197,7 +196,7 @@ class BookActivity :
 
         }
         catch (e: Exception) {
-            Log.e(TAG, "problem onCreate", e)
+//            Log.e(TAG, "problem onCreate", e)
         }
     }
 
@@ -215,7 +214,7 @@ class BookActivity :
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        Log.d(TAG, "saving state...")
+//        Log.d(TAG, "saving state...")
         outState?.putString(CURRENT_PAGE_KEY, currentPage)
     }
 
@@ -279,7 +278,7 @@ class BookActivity :
 
     // add settings as root overlay
     fun openSettings() {
-        Log.d(TAG, "openSettings")
+//        Log.d(TAG, "openSettings")
         if (!settings.isAdded) {
             fragmentManager.beginTransaction()
                     .addToBackStack(TAG)
@@ -292,7 +291,7 @@ class BookActivity :
 
     //************************ PageItemListener Implementation **********************
     override fun onLinkClick(v: View, toName: String) {
-        Log.d(TAG, "onLinkClick to " + toName)
+//        Log.d(TAG, "onLinkClick to " + toName)
         v.isActivated = true
         v.findViewById<TextView>(R.id.pageitem_text)?.also{ speakTextView(it)}
 
@@ -306,13 +305,13 @@ class BookActivity :
 
 
     override fun onTextClick(v: TextView) {
-        Log.d(TAG, "onTextClick: " + v.text)
+//        Log.d(TAG, "onTextClick: " + v.text)
        speakTextView(v)
     }
 
     // speak prompt and each link in turn with highlights
     override fun onChoiceClick(texts: List<View>) {
-        Log.d(TAG, "onChoiceClick: " + texts.count() + " texts")
+//        Log.d(TAG, "onChoiceClick: " + texts.count() + " texts")
 
         interruptSpeak()
 
@@ -324,12 +323,12 @@ class BookActivity :
 
 
     override fun onImageClick(v: ImageView) {
-        Log.d(TAG, "onImageClick")
+//        Log.d(TAG, "onImageClick")
 
     }
 
     override fun onFragmentInteraction(uri: Uri) {
-        Log.d(TAG, "onFragmentInteraction: " + uri)
+//        Log.d(TAG, "onFragmentInteraction: " + uri)
     }
 
     fun setPage(page: Pair<String,List<PageItem>>) {
@@ -350,7 +349,7 @@ class BookActivity :
         // retain page name for saved instance state
         currentPage = name
 
-        Log.d(TAG, "set page fragment: " + name)
+//        Log.d(TAG, "set page fragment: " + name)
 
     }
 

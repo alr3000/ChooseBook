@@ -65,14 +65,14 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            Log.d(TAG, "onCreate")
+//            Log.d(TAG, "onCreate")
             queue = (activity!!.application as App).requestQueue!!
 
             //initialize adapter
             listAdapter = BookListAdapter(activity!!)
             sync()
         } catch (e: Exception) {
-            Log.e(TAG, "problem creating fragment", e)
+//            Log.e(TAG, "problem creating fragment", e)
         }
     }
 
@@ -82,14 +82,14 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
             // last param is false because fragmentManager will attach this view later
             return inflater.inflate(R.layout.content_scrolling_library, container, false)
         } catch (e: Exception) {
-            Log.e(TAG, "problem creating view", e)
+//            Log.e(TAG, "problem creating view", e)
             return View(activity)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated")
+//        Log.d(TAG, "onViewCreated")
         bookListView = (view.findViewById<ListView>(R.id.booklist)).also {
             it.adapter = listAdapter
             it.onItemClickListener = this  //start book activity
@@ -101,12 +101,12 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
     // given context, populate asset list and start observer for downloaded books
     override fun onAttach(context: Context?) {
         try {
-            Log.d(TAG, "onAttach")
+//            Log.d(TAG, "onAttach")
             super.onAttach(context)
 
 
         } catch (e: Exception) {
-            Log.e(TAG, "problem on attaching offline list fragment", e)
+//            Log.e(TAG, "problem on attaching offline list fragment", e)
         }
     }
 
@@ -118,7 +118,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
     // long click prompts for open online or download
     override fun onItemLongClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long): Boolean {
         try {
-            Log.d(TAG, "onItemLongClick: " + position)
+//            Log.d(TAG, "onItemLongClick: " + position)
 
             val book = (parent?.adapter?.getItem(position) as Book)
             AlertDialog.Builder(activity).apply {
@@ -129,7 +129,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
                         dialog.dismiss()
                         openBook(book)
                     } catch (e: Exception) {
-                        Log.e(TAG, "problem starting book activity from dialog " + book.path, e)
+//                        Log.e(TAG, "problem starting book activity from dialog " + book.path, e)
                     }
                 })
                 setPositiveButton(R.string.alert_download, {
@@ -138,7 +138,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
                         dialog.dismiss()
                         saveBook(book)
                     } catch(e: Exception) {
-                        Log.e(TAG, "problem saving book " + book.path, e)
+//                        Log.e(TAG, "problem saving book " + book.path, e)
                     }
 
                 })
@@ -150,7 +150,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
                 show()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "problem download book", e)
+//            Log.e(TAG, "problem download book", e)
         }
         return true
     }
@@ -159,19 +159,19 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
     // click downloads if necessary, starts book activity
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         try {
-            Log.d(TAG, "onItemClick: " + position)
+//            Log.d(TAG, "onItemClick: " + position)
             (parent?.adapter?.getItem(position) as Book)
                     .also {
                         openBook(it)
                     }
         } catch(e: Exception) {
-            Log.e(TAG, "problem starting book activity", e)
+//            Log.e(TAG, "problem starting book activity", e)
         }
     }
 
 
     fun sync() {
-        Log.d(TAG, "SYNC")
+//        Log.d(TAG, "SYNC")
 
         //onlineListAdapter.notifyDataSetInvalidated() -- don't do this: invalidates adapter!
         // instead, just empty the list
@@ -206,10 +206,13 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
                                 }
                     }
                     catch (e: Exception) {
-                        Log.e(TAG, "failed parse titles request", e)
+//                        Log.e(TAG, "failed parse titles request", e)
                     }
                 },
-                { volleyError: VolleyError -> Log.e(TAG, "failed load titles", volleyError)}
+                {
+                    volleyError: VolleyError ->
+                    // Log.e(TAG, "failed load titles", volleyError)
+                }
         ).also {
             it.tag = TAG
         }
@@ -231,10 +234,13 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
                         ))
                     }
                     catch(e: Exception) {
-                        Log.e(TAG, "failed parse book stub", e)
+//                        Log.e(TAG, "failed parse book stub", e)
                     }
                 },
-                { volleyError -> Log.e(TAG, "failed load book stub: " + bookPath, volleyError)}
+                {
+                    volleyError ->
+//                    Log.e(TAG, "failed load book stub: " + bookPath, volleyError)
+                }
         ).also {
             it.tag = TAG
         }
@@ -260,7 +266,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
     //save book json and resources to bookpath in filesdir
     fun saveBook(book:Book) {
 
-        Log.d(TAG, "saveBook: " + book.parentUri)
+//        Log.d(TAG, "saveBook: " + book.parentUri)
 
         val intent = Intent(activity, com.hyperana.choosebook.LoadAllActivity::class.java)
 
@@ -281,7 +287,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
         try {
             when (requestCode) {
                 SAVE_BOOK_REQUEST -> {
-                    Log.d(TAG, "result from save book: " + resultCode)
+//                    Log.d(TAG, "result from save book: " + resultCode)
                     Toast.makeText(
                             activity,
                             if (resultCode != 0) "saved book for offline use" else "Could not save book!",
@@ -289,7 +295,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
                     ).show()
                 }
                 OPEN_BOOK_REQUEST -> {
-                    Log.d(TAG, "result from open book: " + resultCode)
+//                    Log.d(TAG, "result from open book: " + resultCode)
                     val bookUriString = Uri.parse(data?.getStringExtra(EXTRA_URI_STRING))
                     if (resultCode != 0) {
                         startBookActivity(
@@ -308,14 +314,14 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
             }
         }
         catch (e: Exception) {
-            Log.e(TAG, "failed return from save or open activity", e)
+//            Log.e(TAG, "failed return from save or open activity", e)
         }
     }
 
 
     //startBookActivity(bookpath)
     fun startBookActivity(parentUri: Uri, bookPath: String) {
-        Log.d(TAG, "start book activity: " + parentUri)
+//        Log.d(TAG, "start book activity: " + parentUri)
 
         val myIntent = Intent(activity, BookActivity::class.java)
         myIntent.putExtra(EXTRA_BOOKPATH, bookPath)

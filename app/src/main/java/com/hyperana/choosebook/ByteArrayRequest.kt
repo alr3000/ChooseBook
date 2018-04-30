@@ -27,12 +27,12 @@ class ByteArrayRequest(
     val TAG = "ByteArrayRequest"
 
     override fun deliverResponse(p0: ByteArray?) {
-        Log.d(TAG, "deliverResponse: " + p0?.size)
+//        Log.d(TAG, "deliverResponse: " + p0?.size)
         listener?.onResponse(p0)
     }
 
     override fun parseNetworkResponse(p0: NetworkResponse?): Response<ByteArray> {
-       Log.d(TAG, "parseResponse: " + p0?.data?.size)
+//       Log.d(TAG, "parseResponse: " + p0?.data?.size)
         return p0?.data?.let { Response.success(it, HttpHeaderParser.parseCacheHeaders(p0)) } ?:
                 Response.error(VolleyError("No Data!"))
     }

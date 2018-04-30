@@ -33,7 +33,7 @@ class TabbedLibraryActivity : AppCompatActivity() {
 
     //todo: -L- remember tab selected
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "oncreate")
+//        Log.d(TAG, "oncreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tabbed_library)
 
@@ -85,7 +85,7 @@ class TabbedLibraryActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         try {
-            Log.d(TAG, "onOptionsItemSelected")
+//            Log.d(TAG, "onOptionsItemSelected")
             val id = item.itemId
 
             if (id == R.id.action_settings) {
@@ -97,7 +97,7 @@ class TabbedLibraryActivity : AppCompatActivity() {
             }
         }
         catch (e: Exception) {
-            Log.e(TAG, "failed on select settings", e)
+//            Log.e(TAG, "failed on select settings", e)
         }
         return super.onOptionsItemSelected(item)
     }

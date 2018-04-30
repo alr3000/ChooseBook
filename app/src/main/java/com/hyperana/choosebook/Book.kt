@@ -102,7 +102,7 @@ fun loadString(stream: InputStream) : String {
         str = String(buffer)
     }
     catch (e: Exception) {
-        Log.e("static", "problem load string", e)
+//        Log.e("static", "problem load string", e)
     }
     finally {
         stream.close()
@@ -178,7 +178,7 @@ fun BookFromAsset(assets: AssetManager, bookPath: String) : Book? {
         )
     }
     catch (e: Exception) {
-        Log.e("BookFromAsset", "failed for " + bookPath, e)
+//        Log.e("BookFromAsset", "failed for " + bookPath, e)
         return null
     }
 }
@@ -202,7 +202,7 @@ open class Book() {
 
     //Book takes json string (and parent uri) so it can make new uri's from relative paths in json
     constructor(jsonString: String,  path: String, uri: Uri) : this() {
-        Log.d(TAG, "init: " + uri)
+//        Log.d(TAG, "init: " + uri)
         this.path = path
         this.parentUri = uri
         this.jsonString = jsonString
@@ -214,7 +214,7 @@ open class Book() {
        try {
            //todo: -?- make async json parse
            val jBook: Map<String, Any?> = parseJsonObject(JSONObject(jsonString))
-           Log.d(TAG, "parseJsonStream  -> " + jBook.size)
+//           Log.d(TAG, "parseJsonStream  -> " + jBook.size)
 
            // assign book properties
            title = (jBook["title"] as? String) ?: title
@@ -241,7 +241,7 @@ open class Book() {
 
        }
        catch(e: Exception) {
-           Log.e(TAG, "problem parsing json stream", e)
+//           Log.e(TAG, "problem parsing json stream", e)
        }
     }
 
@@ -266,7 +266,7 @@ open class Book() {
                                 ?: listOf()
                 )
             } catch (e: Exception) {
-                Log.e(TAG, "problem creating page contents", e)
+//                Log.e(TAG, "problem creating page contents", e)
                 null
             }
 
@@ -308,7 +308,7 @@ open class Book() {
             else throw Exception("item doesn't fit any page item pageScheme: " + map.toString())
         }
         catch (e: Exception) {
-            Log.e(TAG, "problem createpageitem: " + map?.toString(), e)
+//            Log.e(TAG, "problem createpageitem: " + map?.toString(), e)
             return null
         }
     }
@@ -317,7 +317,7 @@ open class Book() {
     open fun getResourceUri(filename: String): Uri {
         return parentUri.buildUpon().appendPath(filename).build()
                 .also {
-                    Log.d(TAG, "getResourceUri: " + it.toString())
+//                    Log.d(TAG, "getResourceUri: " + it.toString())
                 }
     }
 }

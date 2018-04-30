@@ -43,19 +43,19 @@ class SettingsFragment : Fragment() {
     val closer = object: Runnable {
         override fun run() {
             try {
-                Log.d(TAG, "closeSettings")
+//                Log.d(TAG, "closeSettings")
 
                 // todo: -L- should be done through listener so that back button can close also
                 fragmentManager.popBackStack()
             }
             catch (e: Exception) {
-                Log.e(TAG, "close")
+//                Log.e(TAG, "close")
             }
         }
     }
 
     fun resetTimer() {
-        Log.d(TAG, "resetTimer")
+//        Log.d(TAG, "resetTimer")
         timer.apply {
             removeCallbacks(closer)
             postDelayed(closer, 3000)
@@ -86,7 +86,7 @@ class SettingsFragment : Fragment() {
                 sharedPref?.edit()?.putBoolean(key, isChecked)?.apply()
             }
             catch(e: Exception) {
-                Log.e(TAG, "failed set preferences", e)
+//                Log.e(TAG, "failed set preferences", e)
             }
         }
     }
@@ -94,7 +94,7 @@ class SettingsFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        Log.d(TAG, "onCreateView")
+//        Log.d(TAG, "onCreateView")
         var view: View? = null
 
         try {
@@ -102,7 +102,7 @@ class SettingsFragment : Fragment() {
             view = inflater.inflate(R.layout.fragment_settings, container, false)
         }
         catch (e: Exception) {
-            Log.e(TAG, "failed create settings view")
+//            Log.e(TAG, "failed create settings view")
         }
         finally {
             return view
@@ -110,7 +110,7 @@ class SettingsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated")
+//        Log.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
         try {
@@ -136,7 +136,7 @@ class SettingsFragment : Fragment() {
 
         }
         catch (e: Exception) {
-            Log.e(TAG, "failed onViewCreated", e)
+//            Log.e(TAG, "failed onViewCreated", e)
             closer.run()
         }
 
@@ -144,24 +144,24 @@ class SettingsFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "pause")
+//        Log.d(TAG, "pause")
         timer.removeCallbacks(closer)
 
     }
 
     override fun onDetach() {
         super.onDetach()
-        Log.d(TAG, "detach")
+//        Log.d(TAG, "detach")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d(TAG, "destroyView")
+//        Log.d(TAG, "destroyView")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "stop")
+//        Log.d(TAG, "stop")
     }
 
     /**

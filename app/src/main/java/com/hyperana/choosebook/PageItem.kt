@@ -36,7 +36,7 @@ class PageItemText(val text: String = "") : PageItem() {
     val textId = R.id.pageitem_text
 
     override fun getView(parent: ViewGroup, convertView: View?, pageItemListener: PageItemListener?) : View {
-        Log.d(TAG, "getView")
+//        Log.d(TAG, "getView")
         return View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
             (findViewById<TextView?>(textId))?.also {
@@ -56,7 +56,7 @@ class PageItemImage(val uri: Uri) : PageItem() {
     val imageId = R.id.pageitem_image
 
     override fun getView(parent: ViewGroup, convertView: View?, pageItemListener: PageItemListener?) : View {
-        Log.d(TAG, "getView: " + uri)
+//        Log.d(TAG, "getView: " + uri)
 
         return convertView ?: View.inflate(parent.context, viewId, null).apply {
             parent.addView(this)
@@ -93,7 +93,7 @@ class PageItemRLChoice(val prompt: String = "",
 
 
     override fun getView(parent: ViewGroup, convertView: View?, pageItemListener: PageItemListener?) : View {
-        Log.d(TAG, "getView: " + listOf(rightLink, centerLink, leftLink).joinToString())
+//        Log.d(TAG, "getView: " + listOf(rightLink, centerLink, leftLink).joinToString())
 
         val texts: ArrayList<View> = arrayListOf()
 
@@ -105,7 +105,7 @@ class PageItemRLChoice(val prompt: String = "",
                         try {
                             pageItemListener?.onLinkClick(it, map["toPage"]!!)
                         } catch (e: Exception) {
-                            Log.e(TAG, "problem onClick link " + map.toString(), e)
+//                            Log.e(TAG, "problem onClick link " + map.toString(), e)
                         }
                     }
                 }
@@ -166,7 +166,7 @@ class PageItemChoiceBox( var prompt: String = "",
     }
 
     override fun getView(parent: ViewGroup, convertView: View?, pageItemListener: PageItemListener?) : View {
-        Log.d(TAG, "getView: " + toString())
+//        Log.d(TAG, "getView: " + toString())
 
         val texts: ArrayList<TextView> = arrayListOf()
 
@@ -195,7 +195,7 @@ class PageItemChoiceBox( var prompt: String = "",
                                     try {
                                         pageItemListener?.onLinkClick(it, to)
                                     } catch (e: Exception) {
-                                        Log.e(TAG, "problem onClick link " + text + "->" + to)
+//                                        Log.e(TAG, "problem onClick link " + text + "->" + to)
                                     }
                                 }
                             }

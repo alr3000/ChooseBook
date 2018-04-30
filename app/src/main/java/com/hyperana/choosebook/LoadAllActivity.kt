@@ -47,7 +47,7 @@ class LoadAllActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            Log.d(TAG, "onCreate")
+//            Log.d(TAG, "onCreate")
 
             setContentView(R.layout.fragment_loading)
 
@@ -67,7 +67,7 @@ class LoadAllActivity : AppCompatActivity() {
                         if (!exists() && !mkdirs()) {
                             throw Exception("could not make book dir within directory: " + path)
                         }
-                        Log.d(TAG, "created receiving directory " + path)
+//                        Log.d(TAG, "created receiving directory " + path)
                     }
 
             // start requests
@@ -77,15 +77,15 @@ class LoadAllActivity : AppCompatActivity() {
                         try {
                             val uri = Uri.parse(it as String)
                             val file = File(toDir!!, uri.lastPathSegment)
-                            Log.d(TAG, "requesting: " + it + " as " + file.path)
+//                            Log.d(TAG, "requesting: " + it + " as " + file.path)
                             if (requests.contains(file.path)) {
-                                Log.d(TAG, "already loaded: " + it + " as " + file.path)
+//                                Log.d(TAG, "already loaded: " + it + " as " + file.path)
                             } else {
                                 queue!!.add(createFileRequest(URL(uri.toString()), file).apply { tag = groupId })
                                 requests.add(file.path)
                             }
                         } catch(e: Exception) {
-                            Log.e(TAG, "failed to add request: " + it, e)
+//                            Log.e(TAG, "failed to add request: " + it, e)
                             cancelOnError("load failed: invalid request!")
                         }
                     }
@@ -94,14 +94,14 @@ class LoadAllActivity : AppCompatActivity() {
 
 
         } catch (e: Exception) {
-            Log.e(TAG, "problem on create loader activity", e)
+//            Log.e(TAG, "problem on create loader activity", e)
             cancelOnError("load failed: invalid book!")
         }
     }
 
     // save current requests, id for configuration change
     override fun onSaveInstanceState(outState: Bundle?) {
-        Log.d(TAG, "onSaveInstanceState: " + requests.count())
+//        Log.d(TAG, "onSaveInstanceState: " + requests.count())
 
         outState?.apply {
             putCharSequenceArray(EXTRA_REQUESTED_URLS, requests.toTypedArray())
@@ -113,7 +113,7 @@ class LoadAllActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        Log.d(TAG, "onBackPressed: " + requests.count() + " to be cancelled")
+//        Log.d(TAG, "onBackPressed: " + requests.count() + " to be cancelled")
         queue?.cancelAll(groupId)
 
         super.onBackPressed()
@@ -131,14 +131,14 @@ class LoadAllActivity : AppCompatActivity() {
                 url,
                 object : Response.Listener<ByteArray> {
                     override fun onResponse(p0: ByteArray?) {
-                        Log.d(TAG, "onResponse: " + p0?.size)
+//                        Log.d(TAG, "onResponse: " + p0?.size)
                         requests.remove(file.path)
 
                         try {
                             saveBytesToFile(p0!!, file)
                         }
                         catch (e: Exception) {
-                            Log.e(TAG, "failed save file " + file.path, e)
+//                            Log.e(TAG, "failed save file " + file.path, e)
                             cancelOnError("save failed!")
                         }
 
@@ -148,7 +148,7 @@ class LoadAllActivity : AppCompatActivity() {
                 },
                 object : Response.ErrorListener {
                     override fun onErrorResponse(p0: VolleyError?) {
-                        Log.e(TAG, "onVolleyError: ", p0)
+//                        Log.e(TAG, "onVolleyError: ", p0)
 
                         // stop requests, cancel activity:
                         cancelOnError("load failed: invalid data!")
@@ -170,9 +170,9 @@ class LoadAllActivity : AppCompatActivity() {
     }
 
     fun checkIfComplete() {
-        Log.d(TAG, requests.count().toString() + " requests pending")
+//        Log.d(TAG, requests.count().toString() + " requests pending")
         if (requests.count() == 0) {
-            Log.d(TAG, "loading complete for " + toDir?.toString())
+//            Log.d(TAG, "loading complete for " + toDir?.toString())
 
             setResult(RESULT_OK, Intent().apply {
                 putExtra(EXTRA_URI_STRING, Uri.fromFile(toDir!!).toString())
