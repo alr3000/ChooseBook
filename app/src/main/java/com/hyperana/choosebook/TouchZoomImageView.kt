@@ -8,6 +8,11 @@ import android.view.MotionEvent
 import android.view.MotionEvent.*
 import android.view.View
 
+/************
+ *  zoomscale is applied to the drawable's intrinsic width and height
+ *  fit is for now assumed to be fit-center, don't know if it works for anything else
+ */
+
 class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
     constructor (context: Context) : super (context)
     constructor (context: Context, attrs: AttributeSet) : super (context, attrs)
@@ -19,9 +24,14 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
 
     var zoomScale = 4f // todo: -L- use xml attributes system
 
+    // retain pre-zoom properties
     var oScaleType: ScaleType?  = null // retain scaleType for use on unzoom
     var oImageMatrix = Matrix()
+    var oFitRectF = RectF()
+    var mScaleX = 1f
+    var mScaleY = 1f
 
+    // retain data during gesture for relative calc
     var currentTouchId: Int? = null // working touch id
     var currentCoords = PointF(0f,0f) // view coordinates of last touch point
     var clipRect = RectF()
@@ -47,6 +57,22 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
 
         setOnTouchListener(null)
     }
+/*
+    override fun onDrawForeground(canvas: Canvas?) {
+        super.onDrawForeground(canvas)
+        try {
+            canvas!!.drawRect(
+                    fitRectF,
+                    Paint().apply {
+                        color = Color.parseColor("#99ffff00")
+                        strokeWidth = 20f
+                    })
+
+        }
+        catch (e: Exception) {
+            Log.e(TAG, "problem drawing foreground")
+        }
+    }*/
 
     // ********************* LISTENERS *************************
 
@@ -106,7 +132,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
                         // replace current movement with new one
                         currentTouchId = info.id
                         zoomToViewCoords(info.coords.x, info.coords.y)
-                        return true
+                        return true // consume to receive future events
                     }
                 }
 
@@ -115,7 +141,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
                     // pan to new coords
                     changePosition(info.coords.x, info.coords.y)
 
-                    return true
+                    return true // consume to receive future events
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                     if (info.id == currentTouchId) {
@@ -146,13 +172,18 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
 
     fun zoomToViewCoords(x: Float, y: Float) {
         Log.d(TAG, "zoomToViewCoords: " + x + "," + y)
-        currentCoords = PointF(x, y)
 
-        Log.d(TAG, "fitRectF: " + fitRectF.toString())
+        // retain pre-zoom fitRect for MOVE bounding and to trigger calculation
+        oFitRectF.set(fitRectF)
+        Log.d(TAG, "fitRectF: " + oFitRectF.toString())
 
-        // get image coords from view coords
-        val zoomedClipX = (x - fitRectF.left) * zoomScale
-        val zoomedClipY = (y - fitRectF.top) * zoomScale
+        // get composite scale conversion from fitRect to scaled intrinsic
+        mScaleX = drawable.intrinsicWidth/oFitRectF.width() * zoomScale
+        mScaleY = drawable.intrinsicHeight/oFitRectF.height() * zoomScale
+
+        // get zoomed-image coords from view coords
+        val zoomedClipX = (x - oFitRectF.left) * mScaleX
+        val zoomedClipY = (y - oFitRectF.top) * mScaleY
         Log.d(TAG, "zoomedClip center coords: " + zoomedClipX + "," + zoomedClipY)
 
         // view dimensions
@@ -175,13 +206,17 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
 
             // bounded by zoomed image dimensions
             boundRectInZoomedImage(this)
+
         }
         Log.d(TAG, "clipRect: " + clipRect.toString())
 
+        // retain screen touch coords for MOVE calculations
+        currentCoords = PointF(x, y)
 
-        // create matrix
+        // create matrix and apply to image
         oScaleType = scaleType
         oImageMatrix = imageMatrix
+
         scaleType = ScaleType.MATRIX
         imageMatrix = mMatrix.apply {
 
@@ -192,6 +227,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
             postTranslate(-clipRect.left, -clipRect.top)
         }
 
+        Log.d(TAG, "fitRectF (zoomed): " + fitRectF.toString())
     }
 
     fun cancelZoom() {
@@ -206,9 +242,13 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
 
     fun changePosition(x: Float, y: Float) {
 
+        // bound coords to original fitrect
+        val bx = boundInRange(x, oFitRectF.left .. oFitRectF.right)
+        val by = boundInRange(y, oFitRectF.top .. oFitRectF.bottom)
+
         // screen movement, scaled to zoomed image
-        val dx = (x - currentCoords.x) * zoomScale
-        val dy = (y - currentCoords.y) * zoomScale
+        val dx = (bx - currentCoords.x) * mScaleX
+        val dy = (by - currentCoords.y) * mScaleY
         Log.d(TAG, "changePosition by: " +dx + "," + dy)
 
         // current clip position
@@ -216,6 +256,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
         val cTop = clipRect.top
 
         // adjust viewed portion (clip) of zoomed image
+        // and check bounds
         clipRect.offset(dx, dy)
         boundRectInZoomedImage(clipRect)
         Log.d(TAG, "moved clipRect: " + clipRect.toString())
@@ -229,7 +270,7 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
         }
 
         // save new coords for next move
-        currentCoords = PointF(x, y)
+        currentCoords = PointF(bx, by)
     }
 
 
@@ -252,6 +293,11 @@ class TouchZoomImageView : SizeAwareImageView,  View.OnTouchListener {
             )
         }
 
+    }
+
+    // todo: -L- throw if range start>end
+    fun boundInRange(x: Float, range: ClosedFloatingPointRange<Float>) : Float {
+        return maxOf(x, range.start).let { minOf( it, range.endInclusive)}
     }
 
 }

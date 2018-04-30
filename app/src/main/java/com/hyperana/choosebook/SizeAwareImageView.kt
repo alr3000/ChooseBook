@@ -17,6 +17,7 @@ open class SizeAwareImageView : ImageView {
 
     val mValues = FloatArray(9)
 
+    // todo: -L- separate access from calculation to control re-use
     val fitRectF = RectF()
     get() {
         field = measureFitImage()
@@ -47,7 +48,7 @@ open class SizeAwareImageView : ImageView {
         // set fitrect using "naturally"-fit image position and scaled dimensions
         return RectF().apply {
             set( left, top, left + imageWidth, top + imageHeight)
-            Log.d("SizeAwareImageView", "fitRect: " + toString())
+            //Log.d("SizeAwareImageView", "fitRect: " + toString())
         }
     }
 

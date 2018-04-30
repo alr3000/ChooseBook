@@ -152,6 +152,8 @@ class BookActivity :
     }
 
 
+    //todo: keep current page for configuration change
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
