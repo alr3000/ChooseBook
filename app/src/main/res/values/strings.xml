@@ -29,6 +29,10 @@
     <string name="sound_label">Sound</string>
     <string name="feedback_label">Visual feedback</string>
 
+    <string name="alert_quit_message">Close the book?</string>
+    <string name="alert_quit_yes">Yes</string>
+    <string name="alert_quit_no">No</string>
+
     <!-- Books strings -->
     <string name="default_page_text">Empty Page</string>
 

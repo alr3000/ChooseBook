@@ -275,6 +275,9 @@ open class Book() {
                 .toMap()
     }
 
+    fun getPage(index: Int) : Pair<String, List<PageItem>>? {
+        return pages.asSequence().elementAtOrNull(index)?.toPair()
+    }
 
     // inspects object, returns initialized item (text, image, choice, etc) or null if no suitable item
     fun createPageItem(anyMap: Any?) : PageItem? {

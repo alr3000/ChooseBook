@@ -23,6 +23,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Build
 import android.os.Handler
+import android.os.PersistableBundle
 import android.preference.DialogPreference
 import android.support.v7.app.AlertDialog
 import android.view.MotionEvent
@@ -42,6 +43,10 @@ class BookActivity :
     val TAG = "BookActivity"
     var loaderId = 0
     var book: Book? = null
+
+    // saved state
+    val CURRENT_PAGE_KEY = "currentPage"
+    var currentPage: String? = null
 
     val settings = SettingsFragment()
     var isSoundOn: Boolean = false
@@ -160,6 +165,9 @@ class BookActivity :
             Log.d(TAG, "onCreate")
             setContentView(R.layout.activity_book)
 
+            currentPage = savedInstanceState?.getString(CURRENT_PAGE_KEY)
+            Log.d(TAG, "currentPage: " + currentPage)
+
             intent.data!!.also {
                 (application as App).loadString(it.buildUpon().appendPath(BOOK_FILENAME).build(),
                       object: App.StringListener {
@@ -196,19 +204,46 @@ class BookActivity :
     }
 
 
-
-
-    //todo: -L- touch zooms/pans in a spiral or masks on larger screens and reads text until release?
     //todo: -L- items with "touch" property can have .wav or alt image or sprite
-    //todo: -L- new pages appear below old in a long scroll "history"
+    //todo: -?- new pages appear below old in a long scroll "history"
 
-    //todo: -L- save page on activity.backpressed, offer choice to resume
 
     // release TTS resources
     override fun onPause() {
         super.onPause()
         TTS?.shutdown()
         TTS = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        Log.d(TAG, "saving state...")
+        outState?.putString(CURRENT_PAGE_KEY, currentPage)
+    }
+
+    // confirm quit because page is not saved
+    override fun onBackPressed() {
+
+        // display dialog
+        AlertDialog.Builder(this).apply {
+            setMessage(R.string.alert_quit_message)
+
+            // quit
+            setPositiveButton(R.string.alert_quit_yes, {
+                dialog, buttonIndex ->
+                dialog.dismiss()
+                super.onBackPressed()
+            })
+
+            // dismiss dialog
+            setNegativeButton(R.string.alert_quit_no, {
+                dialog, buttonIndex ->
+                dialog.dismiss()
+            })
+
+            create().show()
+        }
+
     }
 
     override fun onDestroy() {
@@ -223,27 +258,25 @@ class BookActivity :
         interruptSpeak()
     }
 
- fun setBook() {
+    fun setBook()  {
 
-            //set activity title
-            title = book!!.title
+        //set activity title
+        title = book!!.title
 
-            book!!.createPages()
+        book!!.createPages()
 
-            //display first page of book
-            Log.d(TAG, "set first page fragment...")
-            book!!.pages.entries.first().toPair().also {
-                (name, contents) ->
-                //check that this activity is still on top
-                supportFragmentManager.beginTransaction()
-                        .replace(
-                                R.id.page_fragment_container,
-                                PageFragment.newInstance(contents, this),
-                                name
-                        )
+        // get page entry (Map<name, contents>
+        val page = (book!!.pages[currentPage])
 
-                        .commitAllowingStateLoss() //Should check if activity is still on top?
-            }
+                // get saved current page
+                ?.let {
+                    Pair(currentPage!!, it)
+                }
+                ?:
+                // or first page
+                book!!.pages.entries.first().toPair()
+
+        setPage(page)
     }
 
     fun openSettings() {
@@ -293,122 +326,7 @@ class BookActivity :
 
     override fun onImageClick(v: ImageView) {
         Log.d(TAG, "onImageClick")
-        try {
-            // rect to hold view on-screen dimensions
-            val viewRect = Rect()
 
-            // create new imageview clone
-            val highlight = ImageView(this).apply {
-                setImageDrawable(v.drawable)
-                
-                // view discarded on touch
-                setOnClickListener { v -> (parent as ViewGroup).removeView(this) }
-
-                // todo: -L- on touch drags zoomed image
-            }
-         
-            // add highlight view to layout
-            (findViewById<ViewGroup>(R.id.content_frame) as ViewGroup).apply {
-                addView(
-                        highlight,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                getLocalVisibleRect(viewRect)
-            }
-            
-            // full size of image
-            val imageRect = highlight.drawable.bounds
-
-            highlight.scaleType = ImageView.ScaleType.MATRIX
-
-            val SCALE = 3f
-            // zoomed to center
-            val scaledRect = Rect(imageRect).apply {inset((imageRect.width()/SCALE).toInt(), (imageRect.height()/SCALE).toInt())}
-
-            val top = 0
-            val left = 0
-            val centerHoriz = imageRect.width() - scaledRect.width()*2
-            val centerVert = imageRect.height() - scaledRect.height()*2
-            val bottom = imageRect.height() - scaledRect.height()
-            val right = imageRect.width() - scaledRect.width()
-
-            // figure eight
-            val offsetScript = listOf(
-                    Point(left,top),
-                    Point(right, top),
-                    Point(right, centerVert),
-                    Point(centerHoriz, centerVert),
-                    Point(left, centerVert),
-                    Point(left, bottom),
-                    Point(right, bottom),
-                    Point(right, centerVert),
-                    Point(centerHoriz, centerVert),
-                    Point(left, centerVert),
-                    Point(left, top)
-            )
-
-            val applyOffsetListener = object: ValueAnimator.AnimatorUpdateListener {
-                override fun onAnimationUpdate(animation: ValueAnimator?) {
-                    try {
-                        highlight.imageMatrix = Matrix().apply {
-                            val pt = animation?.animatedValue as? Point ?: Point(0,0)
-                            setRectToRect(
-                                    RectF(scaledRect.apply {offsetTo(pt.x, pt.y)}),
-                                    RectF(viewRect),
-                                    Matrix.ScaleToFit.FILL //START
-                            )
-                        }
-                    }
-                    catch (e: Exception) {
-                        // do nothing
-                    }
-                }
-            }
-
-
-            val pointEvaluator = object: TypeEvaluator<Point> {
-                override fun evaluate(fraction: Float, startValue: Point?, endValue: Point?): Point {
-                    try {
-                        return Point(
-                                (startValue!!.x + (endValue!!.x - startValue!!.x)*fraction).toInt(),
-                                (startValue.y + (endValue!!.y - startValue!!.y)*fraction).toInt()
-                        )
-                    }
-                    catch (e:Exception) {
-                        return Point(0, 0)
-                    }
-                }
-            }
-
-            Log.d(TAG, "onImageClick: " + imageRect.toString() + " in " + viewRect.toString())
-            val panScript = AnimatorSet().apply {
-                duration = 2000
-                interpolator = LinearInterpolator()
-            }
-            panScript.playSequentially(
-
-                    (1 .. offsetScript.count() -1).map {
-                        Log.d(TAG, "set animator from " + offsetScript[it - 1].toString() +
-                                " to " + offsetScript[it].toString() )
-                        ValueAnimator.ofObject(
-                                pointEvaluator,
-                                offsetScript[it - 1],
-                                offsetScript[it]
-                        ).apply {
-                            addUpdateListener(applyOffsetListener)
-                        } as Animator
-
-                    }.toMutableList()
-            )
-            panScript.start()
-
-
-
-        }
-        catch (e: Exception) {
-            Log.e(TAG, "failed image click", e)
-        }
     }
 
     override fun onFragmentInteraction(uri: Uri) {
@@ -416,14 +334,25 @@ class BookActivity :
     }
 
     fun setPage(page: Pair<String,List<PageItem>>) {
+        val name = page.first
+        val contents = page.second
+
+        //todo: -?- check that this activity is still on top
+        // replace current/default page fragment
         supportFragmentManager.beginTransaction()
-                //.addToBackStack(page.first) -- don't want to reverse through pages with back button
                 .replace(
                         R.id.page_fragment_container,
-                        PageFragment.newInstance(page.second, this),
-                        page.first
+                        PageFragment.newInstance(contents, this@BookActivity),
+                        name
                 )
-                .commit()
+
+                .commitAllowingStateLoss()
+
+        // retain page name for saved instance state
+        currentPage = name
+
+        Log.d(TAG, "set page fragment: " + name)
+
     }
 
 }
