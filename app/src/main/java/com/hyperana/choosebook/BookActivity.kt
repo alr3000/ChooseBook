@@ -145,7 +145,7 @@ class BookActivity :
     }
 
     //todo: -L- add highlight view a la zoom image view
-    //todo: speakTextView should return a listener object for that utterance/view
+    //todo: -?- speakTextView should return a listener object for that utterance/view
     fun speakTextView(v: View, interrupt: Boolean = true) {
             val textView = (v as? TextView) ?: v.findViewById<TextView?>(R.id.pageitem_text)
             textView?.also {
@@ -156,8 +156,6 @@ class BookActivity :
             }
     }
 
-
-    //todo: keep current page for configuration change
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -232,7 +230,7 @@ class BookActivity :
             setPositiveButton(R.string.alert_quit_yes, {
                 dialog, buttonIndex ->
                 dialog.dismiss()
-                super.onBackPressed()
+                finish()
             })
 
             // dismiss dialog
@@ -279,6 +277,7 @@ class BookActivity :
         setPage(page)
     }
 
+    // add settings as root overlay
     fun openSettings() {
         Log.d(TAG, "openSettings")
         if (!settings.isAdded) {

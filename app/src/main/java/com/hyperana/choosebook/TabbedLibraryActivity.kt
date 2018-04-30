@@ -91,7 +91,7 @@ class TabbedLibraryActivity : AppCompatActivity() {
             if (id == R.id.action_settings) {
                 fragmentManager.beginTransaction()
                         .addToBackStack(TAG)
-                        .add(R.id.page_fragment_container, settings, settings.TAG)
+                        .add(R.id.main_content, settings, settings.TAG)
                         .commit()
                 return true
             }
