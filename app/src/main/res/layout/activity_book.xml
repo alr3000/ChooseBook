@@ -5,25 +5,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.hyperana.choosebook.BookActivity">
+
     <FrameLayout
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="ifContentScrolls">
 
 
             <FrameLayout
                 android:id="@+id/page_fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-               <!-- keep empty because replace does not replace items defined in xml -->
+                <!-- keep empty because replace does not replace items defined in xml -->
             </FrameLayout>
 
-    </ScrollView>
+        </ScrollView>
     </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/settings_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.5"
+        android:visibility="visible"
+        android:layout_gravity="end"
+        android:src="@android:drawable/ic_menu_preferences" />
+
+
+
 </android.support.constraint.ConstraintLayout>

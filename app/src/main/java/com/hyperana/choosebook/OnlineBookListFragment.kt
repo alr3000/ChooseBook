@@ -23,6 +23,8 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
@@ -64,34 +66,34 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
         super.onCreate(savedInstanceState)
         try {
             Log.d(TAG, "onCreate")
-            queue = (activity.application as App).requestQueue!!
+            queue = (activity!!.application as App).requestQueue!!
 
             //initialize adapter
-            listAdapter = BookListAdapter(activity)
+            listAdapter = BookListAdapter(activity!!)
             sync()
         } catch (e: Exception) {
             Log.e(TAG, "problem creating fragment", e)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         try {
             // last param is false because fragmentManager will attach this view later
-            return inflater!!.inflate(R.layout.content_scrolling_library, container, false)
+            return inflater.inflate(R.layout.content_scrolling_library, container, false)
         } catch (e: Exception) {
             Log.e(TAG, "problem creating view", e)
             return View(activity)
         }
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
-        bookListView = (view!!.findViewById(R.id.booklist) as ListView).also {
+        bookListView = (view.findViewById<ListView>(R.id.booklist)).also {
             it.adapter = listAdapter
             it.onItemClickListener = this  //start book activity
-            it.onItemLongClickListener = this //remove book from device
+            it.onItemLongClickListener = this //add book to device
 
         }
     }
@@ -179,11 +181,13 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
         // load titles page and initiate load of each book json into memory
         queue!!.add(createTitlesRequest())
 
+
+
     }
 
     fun isDownloaded(id: String) : Boolean {
-        return ((activity.application as App).savedBookDir!!.resolve(id).exists()
-                || activity.assets.list(ASSETS_BOOK_DIR).contains(id))
+        return ((activity!!.application as App).savedBookDir!!.resolve(id).exists()
+                || activity!!.assets.list(ASSETS_BOOK_DIR).contains(id))
     }
 
     // get titles (bookpaths) array from special s3 index file
@@ -238,9 +242,9 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
 
 
     // save book temporarily into cacheDir/bookpath before opening for "online" viewing
-    // todo: check if the book is already downloaded and use that one instead
+    // todo: -L- check if the book is already downloaded and use that one instead
     fun openBook(book: Book) {
-        val tempDir = (activity.application as App).tempBookDir
+        val tempDir = (activity!!.application as App).tempBookDir
         tempDir!!.deleteRecursively()
 
         val intent = Intent(activity, com.hyperana.choosebook.LoadAllActivity::class.java)
@@ -262,7 +266,7 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
 
         intent.apply {
             putExtra(EXTRA_BOOKPATH, book.path)
-            putExtra(EXTRA_URI_STRING, File((activity.application as App).savedBookDir, book.path).toURI().toString())
+            putExtra(EXTRA_URI_STRING, File((activity!!.application as App).savedBookDir, book.path).toURI().toString())
             putExtra(EXTRA_URI_STRING_ARR, book.resources.map {
                 book.getResourceUri(it).toString()
             }.toTypedArray())
@@ -330,12 +334,10 @@ class OnlineBookListFragment : android.support.v4.app.Fragment(),
      * (http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+       fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
         private val FILE_DIR = "bookDirectory"
         private val ASSET_DIR = "assetDirectory"

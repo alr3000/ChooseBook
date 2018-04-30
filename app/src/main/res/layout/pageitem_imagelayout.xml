@@ -4,13 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
+    <com.hyperana.choosebook.ZoomImageView
         android:id="@+id/pageitem_image"
         style="style/PageItemImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:isScrollContainer="true"
+
     />
 
 </FrameLayout>

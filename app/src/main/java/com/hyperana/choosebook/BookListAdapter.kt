@@ -15,6 +15,7 @@ import android.widget.ListAdapter
 import android.widget.TextView
 import com.android.volley.toolbox.ImageLoader
 import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import java.io.File
 import java.io.FilenameFilter
 
@@ -23,7 +24,7 @@ import java.io.FilenameFilter
  * Creates from directory listing if path provided for observer, otherwise, set list of books
  * listPath must be absolute -- doesn't use getFilesDir, etc
  * start and stop observer on pause and resume
- * todo: make helpers to keep list from being reset (use mutable)
+ * todo: -?- make helpers to keep list from being reset (use mutable)
  */
 fun randomString( length: Int = 8) : String {
     val char = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()
@@ -57,18 +58,23 @@ class BookListAdapter(val activity: Activity) : BaseAdapter() {
                 ))
                 .apply {
                     try {
-                        (findViewById(R.id.title) as? TextView)?.text = book.title
-                        (findViewById(R.id.author) as? TextView)?.text = book.author
+                        (findViewById<TextView?>(R.id.title))?.text = book.title
+                        (findViewById<TextView?>(R.id.author))?.text = book.author
 
                         //set cover image
-                        Log.d(TAG, "book.thumb: " + book.thumb)
-                        (findViewById(R.id.cover) as? ImageView)?.also {
-                            it.setImageResource(R.drawable.no_image)
-                            (activity.application as App).loadImageBitmap(book.thumb, object: App.BitmapListener {
+                        Log.d(TAG, "glide load book.thumb: " + book.thumb)
+                        (findViewById<ImageView?>(R.id.cover))?.also {
+                            //it.setImageResource(R.drawable.no_image)
+                            Glide
+                                    .with(activity)
+                                    .load(book.thumb)
+                                    .into(it)
+                           /* (activity.application as App).loadImageBitmap(book.thumb, object: App.BitmapListener {
                                 override fun onBitmap(bitmap: Bitmap?) {
                                     activity.runOnUiThread { it.setImageBitmap(bitmap) }
                                 }
-                            })
+                            })*/
+                            Log.d(TAG, "glide return from load")
                         }
                     }
                     catch(e: Exception) {

@@ -63,7 +63,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
             Log.d(TAG, "onCreate")
 
             // set paths to watch
-            filesPath = (activity.application as App).savedBookDir!!.path
+            filesPath = (activity!!.application as App).savedBookDir!!.path
             assetPath = ASSETS_BOOK_DIR
 
 
@@ -73,7 +73,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
                     override fun startWatching() {
                         Log.d(TAG, "startWatching " + filesPath)
                         super.startWatching()
-                        activity.runOnUiThread {
+                        activity!!.runOnUiThread {
                             updateDownloadsList()
                         }
                     }
@@ -89,7 +89,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
                             FileObserver.DELETE -> {
                                 Log.d(TAG, "event: " + event + " - " + path)
                                 if (path != null) {
-                                    activity.runOnUiThread {
+                                    activity!!.runOnUiThread {
                                         updateDownloadsList()
                                     }
                                 }
@@ -103,8 +103,8 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
             }
 
             //initialize adapter
-            offlineListAdapter = BookListAdapter(activity)
-            updateAssetsList(activity.assets)
+            offlineListAdapter = BookListAdapter(activity!!)
+            updateAssetsList(activity!!.assets)
             fileObserver?.startWatching()
         }
         catch (e: Exception) {
@@ -112,11 +112,12 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         try {
             // last param is false because fragmentManager will attach this view later
-            return inflater!!.inflate(R.layout.content_scrolling_library, container, false)
+            return inflater.inflate(R.layout.content_scrolling_library, container, false)
         }
         catch (e: Exception) {
             Log.e(TAG, "problem creating view", e)
@@ -124,10 +125,10 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
         }
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
-        (view!!.findViewById(R.id.booklist) as ListView).also {
+        (view.findViewById<ListView>(R.id.booklist)).also {
             it.adapter = offlineListAdapter
             it.onItemClickListener = this  //start book activity
             it.onItemLongClickListener = this //remove book from device
@@ -193,7 +194,7 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
                 ?: listOf()
     }
 
-    //todo: update the downloads
+    //todo: -L- update the downloads
     fun updateDownloadsList() {
         //listFiles is null if empty
         downloadBookList =  File(filesPath).listFiles()
@@ -257,12 +258,12 @@ class OfflineBookListFragment : android.support.v4.app.Fragment(),
      * (http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
+
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
         private val FILE_DIR = "bookDirectory"
         private val ASSET_DIR = "assetDirectory"
