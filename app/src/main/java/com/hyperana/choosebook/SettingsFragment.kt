@@ -124,9 +124,9 @@ class SettingsFragment : Fragment() {
             soundSwitch = view?.findViewById<Switch?>(R.id.mute_switch)?.also {
                 bindSwitchToPreference(it, SETTING_SOUND_STRING)
             }
-            feedbackSwitch = view?.findViewById<Switch?>(R.id.feedback_switch)?.also {
+            /*feedbackSwitch = view?.findViewById<Switch?>(R.id.feedback_switch)?.also {
                 bindSwitchToPreference(it, SETTING_EFFECTS_STRING)
-            }
+            }*/
 
             // set click listener to close settings when user touches outside the content
             view?.setOnClickListener{ closer.run() }
